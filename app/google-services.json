@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "871352940908",
+    "firebase_url": "https://zippe-checkout-app.firebaseio.com",
+    "project_id": "zippe-checkout-app",
+    "storage_bucket": "zippe-checkout-app.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:871352940908:android:8de44f291713326a565b49",
+        "android_client_info": {
+          "package_name": "com.example.zippe"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "871352940908-2dat9l8s2tkd76kt1nlcm6jhufka1jp0.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.zippe",
+            "certificate_hash": "54617fac8daa33eff0793839219926d758127145"
+          }
+        },
+        {
+          "client_id": "871352940908-vuekhk7macjk3lfvosidlkb8rcdqd9nb.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAv3LTA0I06MT9Q43TaxRCJ91Ri1dtqkSw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "871352940908-vuekhk7macjk3lfvosidlkb8rcdqd9nb.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
