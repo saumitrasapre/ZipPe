@@ -112,6 +112,18 @@
             android:id="@+id/loginbtn"
             android:textAllCaps="false"
             android:textColor="@color/whitecolor" />
+        <Button
+            android:layout_width="280dp"
+            android:layout_height="45dp"
+            android:layout_gravity="center"
+            android:layout_marginTop="30dp"
+            android:background="@drawable/btn"
+            android:elevation="200dp"
+            android:text=" Forgot Password"
+            android:textSize="20dp"
+            android:id="@+id/forgotpassword"
+            android:textAllCaps="false"
+            android:textColor="@color/greencolor" />
 
 </LinearLayout>
 </LinearLayout>

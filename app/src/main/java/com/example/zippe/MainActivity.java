@@ -18,10 +18,10 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 
 public class MainActivity extends AppCompatActivity {
-//HELLO 123 ANDRIOD TESTING
+//HELLO 123 ANDROID TESTING
 TextView switchtosignup;
 EditText signInEmail,signInPassword;
-Button loginBtn;
+Button loginBtn,forgotpassword;
 private ProgressDialog pd;
 FirebaseAuth mAuth;
 
@@ -33,6 +33,7 @@ FirebaseAuth mAuth;
         signInEmail=(EditText)findViewById(R.id.signinemail);
         signInPassword=(EditText)findViewById(R.id.signinpassword);
         loginBtn=(Button)findViewById(R.id.loginbtn);
+        forgotpassword=(Button)findViewById(R.id.forgotpassword);
         mAuth=FirebaseAuth.getInstance();
 
         pd=new ProgressDialog(this);
@@ -48,6 +49,15 @@ FirebaseAuth mAuth;
                 finish();
             }
         });
+
+       forgotpassword.setOnClickListener(new View.OnClickListener() {
+           @Override
+           public void onClick(View v) {
+            Intent intent=new Intent(getApplicationContext(),ForgotPassword.class);
+            startActivity(intent);
+           }
+       });
+
         if(mAuth.getCurrentUser()!=null)
         {
             Intent intent=new Intent(getApplicationContext(),LandingScreen.class);

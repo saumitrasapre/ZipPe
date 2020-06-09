@@ -72,28 +72,35 @@ public class Register extends AppCompatActivity {
                 RepeatPassword=repeatpassword.getText().toString();
                 try {
                     if (Password.length() > 0 && Email.length() > 0) {
-                        pd.show();
+                        if (Password.equals(RepeatPassword)) {
+                            pd.show();
 
-                        mAuth.createUserWithEmailAndPassword(Email, Password).addOnCompleteListener(Register.this, new OnCompleteListener<AuthResult>() {
-                            @Override
-                            public void onComplete(@NonNull Task<AuthResult> task) {
-                                if (!task.isSuccessful()) {
-                                    Toast.makeText(getApplicationContext(), "Sign Up Failed", Toast.LENGTH_SHORT).show();
-                                    pd.dismiss();
-                                    return;
-                                    //Log.v("error",task.getResult().toString());
-                                } else {
-                                    Intent myintent = new Intent(getApplicationContext(), LandingScreen.class);
-                                    startActivity(myintent);
-                                    pd.dismiss();
+                            mAuth.createUserWithEmailAndPassword(Email, Password).addOnCompleteListener(Register.this, new OnCompleteListener<AuthResult>() {
+                                @Override
+                                public void onComplete(@NonNull Task<AuthResult> task) {
+                                    if (!task.isSuccessful()) {
+                                        Toast.makeText(getApplicationContext(), "Sign Up Failed", Toast.LENGTH_SHORT).show();
+                                        pd.dismiss();
+                                        return;
+                                        //Log.v("error",task.getResult().toString());
+                                    } else {
+                                        Intent myintent = new Intent(getApplicationContext(), LandingScreen.class);
+                                        startActivity(myintent);
+                                        pd.dismiss();
 
-                                    Toast.makeText(getApplicationContext(), "Sign Up successful...", Toast.LENGTH_SHORT).show();
-                                    finish();
-                                    return;
+                                        Toast.makeText(getApplicationContext(), "Sign Up successful...", Toast.LENGTH_SHORT).show();
+                                        finish();
+                                        return;
+                                    }
                                 }
-                            }
-                        });
-                    } else {
+                            });
+                        }
+                        else
+                        {
+                            Toast.makeText(getApplicationContext(),"Passwords do not match",Toast.LENGTH_SHORT).show();
+                        }
+                        }
+                    else {
                         Toast.makeText(getApplicationContext(), "Fill All Fields", Toast.LENGTH_SHORT).show();
                     }
                 }
