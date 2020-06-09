@@ -24,14 +24,21 @@
             android:textColor="@color/blackcolor"
             android:textSize="40dp"
             />
-        <TextView
+        <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Login"
-            android:gravity="right|center_vertical"
-            android:textColor="@color/fullwhite"
-            android:textSize="20dp"
-            android:id="@+id/switchtologin"/>
+            android:layout_height="match_parent">
+
+            <TextView
+                android:id="@+id/switchtologin"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_centerInParent="true"
+                android:gravity="right"
+                android:text="Login"
+                android:textColor="@color/fullwhite"
+                android:textSize="20dp" />
+        </RelativeLayout>
 
 
     </LinearLayout>
@@ -41,20 +48,29 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-
-
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_marginTop="40dp"
             android:background="@drawable/img">
-
+            <RelativeLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
             <ImageView
                 android:layout_width="130dp"
                 android:layout_height="130dp"
                 android:background="@drawable/avatarview"
-                android:src="@drawable/ic_baseline_camera_alt_24"/>
+                />
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:scaleX="1.005"
+                    android:scaleY="1.005"
+                    android:src="@drawable/ic_baseline_camera_alt_24" />
+            </RelativeLayout>
 
         </LinearLayout>
 
