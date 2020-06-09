@@ -72,6 +72,7 @@ private int RC_SIGN_IN_GOOGLE=1;
                 finish();
             }
         });
+        googleSignIn.setSize(SignInButton.SIZE_ICON_ONLY);
         googleSignIn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
