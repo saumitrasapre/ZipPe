@@ -20,19 +20,18 @@
             android:layout_height="wrap_content"
             android:layout_gravity="left|center_vertical"
             android:fontFamily="sans-serif-medium"
-            android:text="Login"
+            android:text="Sign Up"
             android:textColor="@color/blackcolor"
             android:textSize="40dp"
             />
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Sign Up"
+            android:text="Login"
             android:gravity="right|center_vertical"
             android:textColor="@color/fullwhite"
             android:textSize="20dp"
-            android:id="@+id/switchtosignup"
-            />
+            android:id="@+id/switchtologin"/>
 
 
     </LinearLayout>
@@ -55,7 +54,7 @@
                 android:layout_width="130dp"
                 android:layout_height="130dp"
                 android:background="@drawable/avatarview"
-                android:src="@drawable/ic_baseline_person_24" />
+                android:src="@drawable/ic_baseline_camera_alt_24"/>
 
         </LinearLayout>
 
@@ -65,7 +64,16 @@
             android:layout_gravity="center"
             android:layout_marginTop="30dp"
             android:background="@drawable/edittextbottomborder"
-            android:hint="Email"
+            android:hint="Email address"
+            android:inputType="textEmailAddress"
+            android:paddingLeft="15dp" />
+        <EditText
+            android:layout_width="280dp"
+            android:layout_height="45dp"
+            android:layout_gravity="center"
+            android:layout_marginTop="10dp"
+            android:background="@drawable/edittextbottomborder"
+            android:hint="Username"
             android:inputType="textEmailAddress"
             android:paddingLeft="15dp" />
 
@@ -79,6 +87,16 @@
             android:inputType="textPassword"
             android:paddingLeft="15dp" />
 
+        <EditText
+            android:layout_width="280dp"
+            android:layout_height="45dp"
+            android:layout_gravity="center"
+            android:layout_marginTop="10dp"
+            android:background="@drawable/edittextbottomborder"
+            android:hint="Repeat Password"
+            android:inputType="textPassword"
+            android:paddingLeft="15dp" />
+
         <Button
             android:layout_width="280dp"
             android:layout_height="45dp"
@@ -86,13 +104,12 @@
             android:layout_marginTop="30dp"
             android:background="@drawable/joinbtn"
             android:elevation="200dp"
-            android:text=" LOGIN"
+            android:text="SIGN UP"
             android:textSize="20dp"
-            android:id="@+id/loginbtn"
             android:textAllCaps="false"
             android:textColor="@color/whitecolor" />
 
-</LinearLayout>
+    </LinearLayout>
 </LinearLayout>
 
     <!--android:drawableLeft="@drawable/ic_baseline_check_24"-->
