@@ -9,13 +9,17 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.android.gms.common.*;
 
 public class MainActivity extends AppCompatActivity {
 //HELLO 123 ANDROID TESTING
@@ -24,6 +28,7 @@ EditText signInEmail,signInPassword;
 Button loginBtn,forgotpassword;
 private ProgressDialog pd;
 FirebaseAuth mAuth;
+ImageView googlesignInButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,6 +39,7 @@ FirebaseAuth mAuth;
         signInPassword=(EditText)findViewById(R.id.signinpassword);
         loginBtn=(Button)findViewById(R.id.loginbtn);
         forgotpassword=(Button)findViewById(R.id.forgotpassword);
+        googlesignInButton=(ImageView) findViewById(R.id.googleLogin);
         mAuth=FirebaseAuth.getInstance();
 
         pd=new ProgressDialog(this);
@@ -47,6 +53,11 @@ FirebaseAuth mAuth;
                 Intent intent=new Intent(getApplicationContext(),Register.class);
                 startActivity(intent);
                 finish();
+            }
+        });
+        googlesignInButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
             }
         });
 

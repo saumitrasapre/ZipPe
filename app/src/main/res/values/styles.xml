@@ -5,7 +5,6 @@
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/greencolor</item>
         <item name="colorAccent">@color/colorAccent</item>
-        <item name="android:windowTranslucentNavigation">true</item>
         <item name="android:windowAnimationStyle">@style/CustomActivityAnimation</item>
     </style>
 
