@@ -12,7 +12,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="10dp"
+        android:padding="5dp"
         android:orientation="horizontal">
 
         <TextView
@@ -48,13 +48,11 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-
-
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:layout_marginTop="40dp"
+            android:layout_marginTop="20dp"
             android:background="@drawable/img">
 
             <RelativeLayout
@@ -83,7 +81,7 @@
             android:layout_width="280dp"
             android:layout_height="45dp"
             android:layout_gravity="center"
-            android:layout_marginTop="30dp"
+            android:layout_marginTop="10dp"
             android:background="@drawable/edittextbottomborder"
             android:hint="Email"
             android:inputType="textEmailAddress"
@@ -129,55 +127,56 @@
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:layout_gravity="center">
-            <TextView
-                android:paddingTop="30dp"
+
+            <com.google.android.gms.common.SignInButton
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Login With"
-                android:textSize="18sp"
-                android:layout_gravity="center"
-                android:textColor="@color/greencolor"
-                />
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_gravity="center">
-            <ImageView
-                android:id="@+id/googleLogin"
-                android:layout_gravity="center"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/ic_google_icon"
-                android:scaleX="0.4"
-                android:scaleY="0.4"
-                android:elevation="200dp"
-                />
-            <ImageView
-                android:id="@+id/facebookLogin"
-                android:layout_gravity="center"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/ic_facebook_icon"
-                android:scaleX="0.5"
-                android:scaleY="0.5"
-                android:elevation="200dp"
-                />
-            <ImageView
-                android:id="@+id/twitterLogin"
-                android:layout_gravity="center"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/ic_twitter_logo"
-                android:scaleX="0.5"
-                android:scaleY="0.5"
-                android:elevation="200dp"
-                />
-        </LinearLayout>
+                android:id="@+id/googleLogin"/>
+
         </LinearLayout>
 
 </LinearLayout>
 
 </LinearLayout>
+
+<!--TextView
+android:paddingTop="30dp"
+android:layout_width="wrap_content"
+android:layout_height="wrap_content"
+android:text="Login With"
+android:textSize="18sp"
+android:layout_gravity="center"
+android:textColor="@color/greencolor"
+    />
+<ImageView
+android:id="@+id/googleLogin"
+android:layout_gravity="center"
+android:layout_width="wrap_content"
+android:layout_height="wrap_content"
+android:src="@drawable/ic_google_icon"
+android:scaleX="0.4"
+android:scaleY="0.4"
+android:elevation="200dp"
+    />
+<ImageView
+android:id="@+id/facebookLogin"
+android:layout_gravity="center"
+android:layout_width="wrap_content"
+android:layout_height="wrap_content"
+android:src="@drawable/ic_facebook_icon"
+android:scaleX="0.5"
+android:scaleY="0.5"
+android:elevation="200dp"
+    />
+<ImageView
+android:id="@+id/twitterLogin"
+android:layout_gravity="center"
+android:layout_width="wrap_content"
+android:layout_height="wrap_content"
+android:src="@drawable/ic_twitter_logo"
+android:scaleX="0.5"
+android:scaleY="0.5"
+android:elevation="200dp"
+    /-->
 
     <!--android:drawableLeft="@drawable/ic_baseline_check_24"-->
