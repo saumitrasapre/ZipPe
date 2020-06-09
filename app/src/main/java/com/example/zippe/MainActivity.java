@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
@@ -148,7 +149,7 @@ private int RC_SIGN_IN_GOOGLE=1;
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if(requestCode==RC_SIGN_IN_GOOGLE)
+        if(requestCode==RC_SIGN_IN_GOOGLE && resultCode == Activity.RESULT_OK  )
         {
             Task<GoogleSignInAccount> task =GoogleSignIn.getSignedInAccountFromIntent(data);
             handleSignInResult(task);
@@ -158,9 +159,11 @@ private int RC_SIGN_IN_GOOGLE=1;
     private void handleSignInResult(Task<GoogleSignInAccount> completedTask) {
 
         try {
-            GoogleSignInAccount acc= completedTask.getResult(ApiException.class);
 
-            FirebaseGoogleAuth(acc);
+                GoogleSignInAccount acc = completedTask.getResult(ApiException.class);
+            if(acc != null) {
+                FirebaseGoogleAuth(acc);
+            }
         }
         catch (Exception e)
         {
