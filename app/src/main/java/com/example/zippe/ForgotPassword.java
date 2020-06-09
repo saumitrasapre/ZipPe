@@ -57,7 +57,7 @@ public class ForgotPassword extends AppCompatActivity {
                         }
                         else
                         {
-                            Toast.makeText(getApplicationContext(),"Failed to send the password reset email",Toast.LENGTH_SHORT).show();
+                            Toast.makeText(getApplicationContext(),"User Not Registered",Toast.LENGTH_SHORT).show();
                             pd.dismiss();
                         }
 
