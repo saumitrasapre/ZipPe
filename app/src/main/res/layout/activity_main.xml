@@ -79,6 +79,7 @@
         </LinearLayout>
 
         <EditText
+            android:id="@+id/signinemail"
             android:layout_width="280dp"
             android:layout_height="45dp"
             android:layout_gravity="center"
@@ -89,6 +90,7 @@
             android:paddingLeft="15dp" />
 
         <EditText
+            android:id="@+id/signinpassword"
             android:layout_width="280dp"
             android:layout_height="45dp"
             android:layout_gravity="center"
