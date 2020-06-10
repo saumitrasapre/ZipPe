@@ -1,4 +1,7 @@
 <resources>
     <string name="app_name">ZipPe</string>
     <string name="forgot_password"><u>Forgot Password</u></string>
+    <string name="facebook_app_id">395249444705973</string>
+    <string name="fb_login_protocol_scheme">fb395249444705973</string>
+
 </resources>

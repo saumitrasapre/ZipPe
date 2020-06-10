@@ -8,6 +8,7 @@ import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -15,6 +16,13 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.facebook.AccessToken;
+import com.facebook.AccessTokenTracker;
+import com.facebook.CallbackManager;
+import com.facebook.FacebookCallback;
+import com.facebook.FacebookException;
+import com.facebook.login.LoginResult;
+import com.facebook.login.widget.LoginButton;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
@@ -26,8 +34,11 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FacebookAuthCredential;
+import com.google.firebase.auth.FacebookAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.android.gms.*;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
 
 public class MainActivity extends AppCompatActivity {
@@ -40,6 +51,12 @@ private FirebaseAuth mAuth;
 private SignInButton googleSignIn;
 private GoogleSignInClient mGoogleSignInClient;
 private int RC_SIGN_IN_GOOGLE=1;
+private FirebaseAuth.AuthStateListener authStateListener;
+
+private LoginButton fbloginButton;
+private CallbackManager mCallbackManager;
+private AccessTokenTracker accessTokenTracker;
+private static final String TAG="FacebookAuthentication";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,6 +69,8 @@ private int RC_SIGN_IN_GOOGLE=1;
         forgotpassword=(Button)findViewById(R.id.forgotpassword);
         googleSignIn=(SignInButton) findViewById(R.id.googleLogin);
         mAuth=FirebaseAuth.getInstance();
+        fbloginButton=(LoginButton)findViewById(R.id.fb_login_button);
+
 
         pd=new ProgressDialog(this);
         pd.setMessage("Loading...");
@@ -73,6 +92,7 @@ private int RC_SIGN_IN_GOOGLE=1;
                 finish();
             }
         });
+
         googleSignIn.setSize(SignInButton.SIZE_ICON_ONLY);
         googleSignIn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -139,7 +159,74 @@ private int RC_SIGN_IN_GOOGLE=1;
                 }
             }
             });
-}
+
+        fbloginButton.setReadPermissions("email","public_profile");
+
+        mCallbackManager= CallbackManager.Factory.create();
+        fbloginButton.registerCallback(mCallbackManager, new FacebookCallback<LoginResult>() {
+            @Override
+            public void onSuccess(LoginResult loginResult) {
+                Log.d(TAG,"onSuccess"+loginResult);
+                handleFacebookToken(loginResult.getAccessToken());
+            }
+
+            @Override
+            public void onCancel() {
+                Log.d(TAG,"onCancel");
+
+            }
+
+            @Override
+            public void onError(FacebookException error) {
+                Log.d(TAG,"onError"+error);
+
+            }
+        });
+
+        authStateListener=new FirebaseAuth.AuthStateListener() {
+            @Override
+            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+
+            }
+        };
+
+        accessTokenTracker=new AccessTokenTracker() {
+            @Override
+            protected void onCurrentAccessTokenChanged(AccessToken oldAccessToken, AccessToken currentAccessToken) {
+                if(currentAccessToken==null)
+                {
+                    mAuth.signOut();
+                }
+            }
+        };
+
+    }
+
+
+
+    private void handleFacebookToken(AccessToken accessToken) {
+        Log.d(TAG,"handleFacebookToken"+accessToken);
+
+        AuthCredential credential= FacebookAuthProvider.getCredential(accessToken.getToken());
+        mAuth.signInWithCredential(credential).addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+            @Override
+            public void onComplete(@NonNull Task<AuthResult> task) {
+                if(task.isSuccessful())
+                {
+                    Log.d(TAG,"Sign in with credential successful");
+                    FirebaseUser user=mAuth.getCurrentUser();
+                    Intent intent = new Intent(getApplicationContext(), LandingScreen.class);
+                    startActivity(intent);
+                }
+                else
+                {
+                    Log.d(TAG,"Sign in with credential failure",task.getException());
+                    Toast.makeText(MainActivity.this,"Authentication Failed",Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+
+    }
 
     private void signInWithGoogle() {
         Intent signInIntent =mGoogleSignInClient.getSignInIntent();
@@ -149,10 +236,15 @@ private int RC_SIGN_IN_GOOGLE=1;
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if(requestCode==RC_SIGN_IN_GOOGLE && resultCode == Activity.RESULT_OK  )
-        {
-            Task<GoogleSignInAccount> task =GoogleSignIn.getSignedInAccountFromIntent(data);
+
+        if(requestCode==RC_SIGN_IN_GOOGLE && resultCode == Activity.RESULT_OK  ) {
+            Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
             handleSignInResult(task);
+        }
+        System.out.println("Facebook request code is "+requestCode);
+        if(requestCode==64206 && resultCode == Activity.RESULT_OK ) {
+
+            mCallbackManager.onActivityResult(requestCode, resultCode, data);
         }
     }
 
@@ -191,5 +283,21 @@ private int RC_SIGN_IN_GOOGLE=1;
                 }
             }
         });
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        mAuth.addAuthStateListener(authStateListener);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+
+        if(authStateListener!=null)
+        {
+            mAuth.removeAuthStateListener(authStateListener);
+        }
     }
 }
