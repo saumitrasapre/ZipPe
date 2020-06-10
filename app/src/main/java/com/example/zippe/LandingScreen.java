@@ -9,7 +9,6 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
-import com.facebook.login.LoginManager;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
@@ -46,8 +45,6 @@ public class LandingScreen extends AppCompatActivity {
                 pd.show();
                 FirebaseAuth.getInstance().signOut();
                 mGoogleSignInClient.signOut();
-                FirebaseAuth.getInstance().signOut();
-                LoginManager.getInstance().logOut();
                 Toast.makeText(getApplicationContext(),"You have been logged out",Toast.LENGTH_SHORT).show();
                 pd.dismiss();
                 Intent intent=new Intent(getApplicationContext(),MainActivity.class);

@@ -8,6 +8,7 @@ import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.telecom.Call;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -42,22 +43,22 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
 
 public class MainActivity extends AppCompatActivity {
-//HELLO 123 ANDROID TESTING
-private TextView switchtosignup;
-private EditText signInEmail,signInPassword;
-private Button loginBtn,forgotpassword;
-private ProgressDialog pd;
-private FirebaseAuth mAuth;
-private SignInButton googleSignIn;
-private GoogleSignInClient mGoogleSignInClient;
-private int RC_SIGN_IN_GOOGLE=1;
-private FirebaseAuth.AuthStateListener authStateListener;
+    //HELLO 123 ANDROID TESTING
+    private TextView switchtosignup;
+    private EditText signInEmail,signInPassword;
+    private Button loginBtn,forgotpassword;
+    private ProgressDialog pd;
+    private FirebaseAuth mAuth;
+    private SignInButton googleSignIn;
+    private GoogleSignInClient mGoogleSignInClient;
+    private int RC_SIGN_IN_GOOGLE=1;
+    private FirebaseAuth.AuthStateListener authStateListener;
 
-private LoginButton fbloginButton;
-private CallbackManager mCallbackManager;
-private AccessTokenTracker accessTokenTracker;
-private static final String TAG="FacebookAuthentication";
-//HELLO
+    private LoginButton fbloginButton;
+    private CallbackManager mCallbackManager;
+    private AccessTokenTracker accessTokenTracker;
+    private static final String TAG="FacebookAuthentication";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -101,13 +102,13 @@ private static final String TAG="FacebookAuthentication";
             }
         });
 
-       forgotpassword.setOnClickListener(new View.OnClickListener() {
-           @Override
-           public void onClick(View v) {
-            Intent intent=new Intent(getApplicationContext(),ForgotPassword.class);
-            startActivity(intent);
-           }
-       });
+        forgotpassword.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent=new Intent(getApplicationContext(),ForgotPassword.class);
+                startActivity(intent);
+            }
+        });
 
         if(mAuth.getCurrentUser()!=null)
         {
@@ -158,7 +159,7 @@ private static final String TAG="FacebookAuthentication";
                     e.printStackTrace();
                 }
             }
-            });
+        });
 
         fbloginButton.setReadPermissions("email","public_profile");
 
@@ -252,7 +253,7 @@ private static final String TAG="FacebookAuthentication";
 
         try {
 
-                GoogleSignInAccount acc = completedTask.getResult(ApiException.class);
+            GoogleSignInAccount acc = completedTask.getResult(ApiException.class);
             if(acc != null) {
                 FirebaseGoogleAuth(acc);
             }
