@@ -57,7 +57,7 @@ private LoginButton fbloginButton;
 private CallbackManager mCallbackManager;
 private AccessTokenTracker accessTokenTracker;
 private static final String TAG="FacebookAuthentication";
-
+//HELLO
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
