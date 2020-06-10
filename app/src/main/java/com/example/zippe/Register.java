@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -14,11 +15,17 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.basgeekball.awesomevalidation.AwesomeValidation;
+import com.basgeekball.awesomevalidation.ValidationStyle;
+import com.basgeekball.awesomevalidation.utility.RegexTemplate;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+
+import static com.basgeekball.awesomevalidation.ValidationStyle.BASIC;
+import static com.basgeekball.awesomevalidation.ValidationStyle.COLORATION;
 
 public class Register extends AppCompatActivity {
 
@@ -27,6 +34,8 @@ public class Register extends AppCompatActivity {
     EditText email,username,password,repeatpassword;
     Button signUpBtn;
     ProgressDialog pd;
+    AwesomeValidation awesomeValidation;
+
 
     String Email,Password,RepeatPassword;
     @Override
@@ -39,6 +48,9 @@ public class Register extends AppCompatActivity {
         password=findViewById(R.id.password);
         repeatpassword=findViewById(R.id.repeatPassword);
         signUpBtn=findViewById(R.id.signUpBtn);
+        awesomeValidation=new AwesomeValidation(BASIC);
+        awesomeValidation.addValidation(this,R.id.email,"^\\w+@[a-zA-Z_]+?\\.[a-zA-Z]{2,3}$",R.string.err_email);
+        awesomeValidation.addValidation(this,R.id.username,RegexTemplate.NOT_EMPTY,R.string.err_username);
 
         pd=new ProgressDialog(this);
         pd.setMessage("Loading...");
@@ -67,9 +79,11 @@ public class Register extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
-                Email=email.getText().toString();
-                Password=password.getText().toString();
-                RepeatPassword=repeatpassword.getText().toString();
+                if(awesomeValidation.validate()) {
+                    Email = email.getText().toString();
+                    Password = password.getText().toString();
+                    RepeatPassword = repeatpassword.getText().toString();
+                }
                 try {
                     if (Password.length() > 0 && Email.length() > 0) {
                         if (Password.equals(RepeatPassword)) {

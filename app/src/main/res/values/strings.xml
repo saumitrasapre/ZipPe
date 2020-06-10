@@ -3,4 +3,7 @@
     <string name="forgot_password"><u>Forgot Password</u></string>
     <string name="facebook_app_id">395249444705973</string>
     <string name="fb_login_protocol_scheme">fb395249444705973</string>
+    <string name="err_email">Invalid Email</string>
+    <string name="err_password">Password too weak</string>
+    <string name="err_username">Username cannot be empty</string>
 </resources>

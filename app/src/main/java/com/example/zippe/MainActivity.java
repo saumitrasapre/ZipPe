@@ -94,7 +94,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        googleSignIn.setSize(SignInButton.SIZE_ICON_ONLY);
+        googleSignIn.setSize(SignInButton.SIZE_STANDARD);
         googleSignIn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
