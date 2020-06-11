@@ -52,7 +52,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:layout_marginTop="20dp"
+            android:layout_marginTop="5dp"
             android:background="@drawable/img">
             <RelativeLayout
                 android:layout_width="wrap_content"
@@ -73,17 +73,33 @@
             </RelativeLayout>
 
         </LinearLayout>
-
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:id="@+id/email_layout"
+            android:gravity="center"
+            android:layout_gravity="center"
+            android:layout_marginTop="10dp">
         <EditText
             android:id="@+id/email"
             android:layout_width="280dp"
             android:layout_height="45dp"
             android:layout_gravity="center"
-            android:layout_marginTop="30dp"
             android:background="@drawable/edittextbottomborder"
             android:hint="Email address"
             android:inputType="textEmailAddress"
             android:paddingLeft="15dp" />
+        </com.google.android.material.textfield.TextInputLayout>
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:id="@+id/username_layout"
+            app:counterEnabled="true"
+            app:counterMaxLength="15"
+            android:layout_gravity="center">
         <EditText
             android:id="@+id/username"
             android:layout_width="280dp"
@@ -92,9 +108,19 @@
             android:layout_marginTop="10dp"
             android:background="@drawable/edittextbottomborder"
             android:hint="Username"
-            android:inputType="textEmailAddress"
+            android:inputType="text"
             android:paddingLeft="15dp" />
+        </com.google.android.material.textfield.TextInputLayout>
 
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:id="@+id/password_layout"
+            android:layout_gravity="center"
+            app:passwordToggleEnabled="true">
         <EditText
             android:id="@+id/password"
             android:layout_width="280dp"
@@ -105,7 +131,15 @@
             android:hint="Password"
             android:inputType="textPassword"
             android:paddingLeft="15dp" />
-
+        </com.google.android.material.textfield.TextInputLayout>
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:id="@+id/repeat_password_layout"
+            android:layout_gravity="center"
+            app:passwordToggleEnabled="true">
         <EditText
             android:id="@+id/repeatPassword"
             android:layout_width="280dp"
@@ -116,20 +150,21 @@
             android:hint="Retype Password"
             android:inputType="textPassword"
             android:paddingLeft="15dp" />
+        </com.google.android.material.textfield.TextInputLayout>
+
 
         <Button
             android:id="@+id/signUpBtn"
             android:layout_width="280dp"
             android:layout_height="45dp"
             android:layout_gravity="center"
-            android:layout_marginTop="30dp"
+            android:layout_marginTop="20dp"
             android:background="@drawable/joinbtn"
             android:elevation="200dp"
             android:text="SIGN UP"
             android:textSize="20dp"
             android:textAllCaps="false"
             android:textColor="@color/whitecolor" />
-
     </LinearLayout>
 </LinearLayout>
 

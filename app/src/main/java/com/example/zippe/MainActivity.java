@@ -10,6 +10,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.telecom.Call;
 import android.util.Log;
+import android.util.Patterns;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -34,6 +35,7 @@ import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FacebookAuthCredential;
@@ -43,6 +45,10 @@ import com.google.android.gms.*;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
 
+import org.w3c.dom.Text;
+
+import java.util.regex.Pattern;
+
 public class MainActivity extends AppCompatActivity {
     //HELLO 123 ANDROID TESTING
     private TextView switchtosignup;
@@ -51,6 +57,8 @@ public class MainActivity extends AppCompatActivity {
     private ProgressDialog pd;
     private FirebaseAuth mAuth;
     private SignInButton googleSignIn;
+    private TextInputLayout signInEmail_layout,signInPassword_layout;
+
     private GoogleSignInClient mGoogleSignInClient;
     private int RC_SIGN_IN_GOOGLE=1;
     private FirebaseAuth.AuthStateListener authStateListener;
@@ -70,6 +78,8 @@ public class MainActivity extends AppCompatActivity {
         loginBtn=(Button)findViewById(R.id.loginbtn);
         forgotpassword=(Button)findViewById(R.id.forgotpassword);
         googleSignIn=(SignInButton) findViewById(R.id.googleLogin);
+        signInEmail_layout=(TextInputLayout)findViewById(R.id.signinemail_layout);
+        signInPassword_layout=(TextInputLayout)findViewById(R.id.signinpassword_layout);
         mAuth=FirebaseAuth.getInstance();
         fbloginButton=(LoginButton)findViewById(R.id.fb_login_button);
 
@@ -128,36 +138,38 @@ public class MainActivity extends AppCompatActivity {
         loginBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if (!validateEmail() | !validatePassword()) {
+                    return;
+                } else {
+                    final String SignInemail = signInEmail.getText().toString();
+                    final String SignInpassword = signInPassword.getText().toString();
 
-                final String SignInemail = signInEmail.getText().toString();
-                final String SignInpassword = signInPassword.getText().toString();
+                    try {
+                        if (SignInpassword.length() > 0 && SignInemail.length() > 0) {
 
-                try {
-                    if (SignInpassword.length() > 0 && SignInemail.length() > 0) {
+                            pd.show();
+                            mAuth.signInWithEmailAndPassword(SignInemail, SignInpassword).addOnCompleteListener(MainActivity.this, new OnCompleteListener<AuthResult>() {
+                                @Override
+                                public void onComplete(@NonNull Task<AuthResult> task) {
 
-                        pd.show();
-                        mAuth.signInWithEmailAndPassword(SignInemail, SignInpassword).addOnCompleteListener(MainActivity.this, new OnCompleteListener<AuthResult>() {
-                            @Override
-                            public void onComplete(@NonNull Task<AuthResult> task) {
-
-                                if (task.isSuccessful()) {
-                                    Intent intent = new Intent(getApplicationContext(), LandingScreen.class);
-                                    startActivity(intent);
-                                    finish();
-                                } else {
-                                    Toast.makeText(getApplicationContext(), "Error signing in...", Toast.LENGTH_SHORT).show();
+                                    if (task.isSuccessful()) {
+                                        Intent intent = new Intent(getApplicationContext(), LandingScreen.class);
+                                        startActivity(intent);
+                                        finish();
+                                    } else {
+                                        Toast.makeText(getApplicationContext(), "Error signing in...", Toast.LENGTH_SHORT).show();
+                                        pd.dismiss();
+                                        return;
+                                    }
                                     pd.dismiss();
-                                    return;
                                 }
-                                pd.dismiss();
-                            }
-                        });
-                    } else {
-                        Toast.makeText(MainActivity.this, "Fill All Fields", Toast.LENGTH_SHORT).show();
+                            });
+                        } else {
+                            Toast.makeText(MainActivity.this, "Fill All Fields", Toast.LENGTH_SHORT).show();
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
                     }
-                }catch (Exception e)
-                {
-                    e.printStackTrace();
                 }
             }
         });
@@ -188,7 +200,6 @@ public class MainActivity extends AppCompatActivity {
         authStateListener=new FirebaseAuth.AuthStateListener() {
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
-
             }
         };
 
@@ -302,4 +313,40 @@ public class MainActivity extends AppCompatActivity {
             mAuth.removeAuthStateListener(authStateListener);
         }
     }
+    private boolean validateEmail()
+    {
+        String emailString=signInEmail.getText().toString().trim();
+        if(emailString.isEmpty())
+        {
+            signInEmail_layout.setError("Field cannot be empty");
+            return false;
+        }
+        else if(!Patterns.EMAIL_ADDRESS.matcher(emailString).matches())
+        {
+            signInEmail_layout.setError("Invalid Email");
+            return false;
+        }
+        else
+        {
+            signInEmail_layout.setError(null);
+            return true;
+        }
+    }
+
+    private boolean validatePassword()
+    {
+        String passwordString=signInPassword.getText().toString().trim();
+
+        if(passwordString.isEmpty())
+        {
+            signInPassword_layout.setError("Field cannot be empty");
+            return false;
+        }
+        else
+        {
+            signInPassword_layout.setError(null);
+            return true;
+        }
+    }
+
 }

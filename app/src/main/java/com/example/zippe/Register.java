@@ -3,38 +3,43 @@ package com.example.zippe;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Bundle;
-import android.util.Log;
+import android.util.Patterns;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.basgeekball.awesomevalidation.AwesomeValidation;
-import com.basgeekball.awesomevalidation.ValidationStyle;
-import com.basgeekball.awesomevalidation.utility.RegexTemplate;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 
-import static com.basgeekball.awesomevalidation.ValidationStyle.BASIC;
-import static com.basgeekball.awesomevalidation.ValidationStyle.COLORATION;
+import java.util.regex.Pattern;
+
 
 public class Register extends AppCompatActivity {
 
-    TextView switchtologin;
-    FirebaseAuth mAuth;
-    EditText email,username,password,repeatpassword;
-    Button signUpBtn;
-    ProgressDialog pd;
-    AwesomeValidation awesomeValidation;
+    private TextView switchtologin;
+    private FirebaseAuth mAuth;
+    private EditText email,username,password,repeatpassword;
+    private TextInputLayout email_layout,username_layout,password_layout,repeat_password_layout;
+    private Button signUpBtn;
+    private ProgressDialog pd;
+    private static final Pattern PASSWORD_PATTERN=
+            Pattern.compile("^" +
+                    "(?=.*[0-9])" +         //at least 1 digit
+                    "(?=.*[a-z])" +         //at least 1 lower case letter
+                    "(?=.*[A-Z])" +         //at least 1 upper case letter
+                    //"(?=.*[a-zA-Z])" +      //any letter
+                    "(?=.*[@#$%^&+=])" +    //at least 1 special character
+                    "(?=\\S+$)" +           //no white spaces
+                    ".{6,}" +               //at least 6 characters
+                    "$");
 
 
     String Email,Password,RepeatPassword;
@@ -48,9 +53,11 @@ public class Register extends AppCompatActivity {
         password=findViewById(R.id.password);
         repeatpassword=findViewById(R.id.repeatPassword);
         signUpBtn=findViewById(R.id.signUpBtn);
-        awesomeValidation=new AwesomeValidation(BASIC);
-        awesomeValidation.addValidation(this,R.id.email,"^\\w+@[a-zA-Z_]+?\\.[a-zA-Z]{2,3}$",R.string.err_email);
-        awesomeValidation.addValidation(this,R.id.username,RegexTemplate.NOT_EMPTY,R.string.err_username);
+
+        email_layout=findViewById(R.id.email_layout);
+        username_layout=findViewById(R.id.username_layout);
+        password_layout=findViewById(R.id.password_layout);
+        repeat_password_layout=findViewById(R.id.repeat_password_layout);
 
         pd=new ProgressDialog(this);
         pd.setMessage("Loading...");
@@ -78,99 +85,129 @@ public class Register extends AppCompatActivity {
         signUpBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
-                if(awesomeValidation.validate()) {
+                if (!validateEmail() | !validatePassword() | !validateUsername()|!validateRepeatPassword()) {
+                    return;
+                } else {
                     Email = email.getText().toString();
                     Password = password.getText().toString();
                     RepeatPassword = repeatpassword.getText().toString();
-                }
-                try {
-                    if (Password.length() > 0 && Email.length() > 0) {
-                        if (Password.equals(RepeatPassword)) {
-                            pd.show();
+                    try {
+                        if (Password.length() > 0 && Email.length() > 0) {
+                            if (Password.equals(RepeatPassword)) {
+                                pd.show();
 
-                            mAuth.createUserWithEmailAndPassword(Email, Password).addOnCompleteListener(Register.this, new OnCompleteListener<AuthResult>() {
-                                @Override
-                                public void onComplete(@NonNull Task<AuthResult> task) {
-                                    if (!task.isSuccessful()) {
-                                        Toast.makeText(getApplicationContext(), "Sign Up Failed", Toast.LENGTH_SHORT).show();
-                                        pd.dismiss();
-                                        return;
-                                        //Log.v("error",task.getResult().toString());
-                                    } else {
-                                        Intent myintent = new Intent(getApplicationContext(), LandingScreen.class);
-                                        startActivity(myintent);
-                                        pd.dismiss();
+                                mAuth.createUserWithEmailAndPassword(Email, Password).addOnCompleteListener(Register.this, new OnCompleteListener<AuthResult>() {
+                                    @Override
+                                    public void onComplete(@NonNull Task<AuthResult> task) {
+                                        if (!task.isSuccessful()) {
+                                            Toast.makeText(getApplicationContext(), "Sign Up Failed", Toast.LENGTH_SHORT).show();
+                                            pd.dismiss();
+                                            return;
+                                            //Log.v("error",task.getResult().toString());
+                                        } else {
+                                            Intent myintent = new Intent(getApplicationContext(), LandingScreen.class);
+                                            startActivity(myintent);
+                                            pd.dismiss();
 
-                                        Toast.makeText(getApplicationContext(), "Sign Up successful...", Toast.LENGTH_SHORT).show();
-                                        finish();
-                                        return;
+                                            Toast.makeText(getApplicationContext(), "Sign Up successful...", Toast.LENGTH_SHORT).show();
+                                            finish();
+                                            return;
+                                        }
                                     }
-                                }
-                            });
+                                });
+                            } else {
+                                Toast.makeText(getApplicationContext(), "Passwords do not match", Toast.LENGTH_SHORT).show();
+                            }
+                        } else {
+                            Toast.makeText(getApplicationContext(), "Fill All Fields", Toast.LENGTH_SHORT).show();
                         }
-                        else
-                        {
-                            Toast.makeText(getApplicationContext(),"Passwords do not match",Toast.LENGTH_SHORT).show();
-                        }
-                        }
-                    else {
-                        Toast.makeText(getApplicationContext(), "Fill All Fields", Toast.LENGTH_SHORT).show();
+                    } catch (Exception e) {
+                        e.printStackTrace();
                     }
-                }
-                catch (Exception e)
-                {
-                    e.printStackTrace();
                 }
             }
         });
     }
 
-    private void createAccount(String email, String password) {
-
-
-        // [START create_user_with_email]
-        mAuth.createUserWithEmailAndPassword(email, password)
-                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        if (task.isSuccessful()) {
-                            // Sign in success, update UI with the signed-in user's information
-
-                            FirebaseUser user = mAuth.getCurrentUser();
-                            sendEmailVerification();
-
-                        } else {
-                            // If sign in fails, display a message to the user.
-
-                            Toast.makeText(getApplicationContext(), "Authentication failed.",
-                                    Toast.LENGTH_SHORT).show();
-
-                        }
-
-
-                    }
-                });
-        // [END create_user_with_email]
+    private boolean validateEmail()
+    {
+        String emailString=email.getText().toString().trim();
+        if(emailString.isEmpty())
+        {
+            email_layout.setError("Field cannot be empty");
+            return false;
+        }
+        else if(!Patterns.EMAIL_ADDRESS.matcher(emailString).matches())
+        {
+            email_layout.setError("Invalid Email");
+            return false;
+        }
+        else
+        {
+            email_layout.setError(null);
+            return true;
+        }
     }
 
-    private void sendEmailVerification() {
-        // Disable button
-        // Send verification email
-        // [START send_email_verification]
-        final FirebaseUser user = mAuth.getCurrentUser();
-        user.sendEmailVerification()
-                .addOnCompleteListener(this, new OnCompleteListener<Void>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Void> task) {
-                        // [START_EXCLUDE]
-                        // Re-enable button
-
-                        Log.v( "SSSS", String.valueOf(user.isEmailVerified()));
-
-                        // [END_EXCLUDE]
-                    }
-                });
-        // [END send_email_verification]
+    private boolean validateUsername()
+    {
+        String usernameString=username.getText().toString();
+        if(usernameString.isEmpty())
+        {
+            username_layout.setError("Field cannot be empty");
+            return false;
+        }
+        else if(usernameString.length()>15)
+        {
+            username_layout.setError("Username too long");
+            return false;
+        }
+        else
+        {
+            username_layout.setError(null);
+            return true;
+        }
     }
+    private boolean validatePassword()
+    {
+        String passwordString=password.getText().toString().trim();
+
+        if(passwordString.isEmpty())
+        {
+            password_layout.setError("Field cannot be empty");
+            return false;
+        }
+        else if(!PASSWORD_PATTERN.matcher(passwordString).matches())
+        {
+            password_layout.setError("Password too weak");
+            return false;
+        }
+        else
+        {
+            password_layout.setError(null);
+            return true;
+        }
+    }
+
+    private boolean validateRepeatPassword()
+    {
+        String passwordString=password.getText().toString().trim();
+        String retypePasswordString=repeatpassword.getText().toString().trim();
+        if (retypePasswordString.isEmpty())
+            {
+                repeat_password_layout.setError("Field cannot be empty");
+                return false;
+            }
+        else if(!retypePasswordString.equals(passwordString))
+        {
+            repeat_password_layout.setError("Passwords do not match");
+            return false;
+        }
+        else
+        {
+            repeat_password_layout.setError(null);
+            return true;
+        }
+    }
+
 }
