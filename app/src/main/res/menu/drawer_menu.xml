@@ -4,6 +4,10 @@
     tools:showIn="navigation_view">
     <group android:checkableBehavior="single">
         <item
+            android:id="@+id/viewhome"
+            android:icon="@drawable/ic_baseline_home_24"
+            android:title="Home" />
+        <item
             android:id="@+id/viewprofile"
             android:icon="@drawable/ic_baseline_account_circle_24"
             android:title="Profile" />

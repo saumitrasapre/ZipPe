@@ -11,8 +11,7 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.facebook.login.LoginManager;
@@ -24,10 +23,10 @@ import com.google.firebase.auth.FirebaseAuth;
 
 public class LandingScreen extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
-    //Button logOut;
     ProgressDialog pd;
     Toolbar toolbar;
     DrawerLayout drawerLayout;
+    TextView drawer_email;
     private GoogleSignInClient mGoogleSignInClient;
 
     @Override
@@ -37,6 +36,10 @@ public class LandingScreen extends AppCompatActivity implements NavigationView.O
             case R.id.viewprofile:
                 getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
                         new ProfileFragment()).commit();
+                break;
+            case R.id.viewhome:
+                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
+                        new HomeFragment()).commit();
                 break;
 
             case R.id.logout:
@@ -74,9 +77,11 @@ public class LandingScreen extends AppCompatActivity implements NavigationView.O
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_landing_screen);
 
-        //logOut=findViewById(R.id.logoutbtn);
+        NavigationView navigationView=findViewById(R.id.nav_view);
+        navigationView.setNavigationItemSelectedListener(this);
         toolbar=findViewById(R.id.toolbar);
         drawerLayout=findViewById(R.id.drawer_layout);
+        drawer_email=navigationView.getHeaderView(0).findViewById(R.id.drawer_email);
         setSupportActionBar(toolbar);
 
         ActionBarDrawerToggle toggle=new ActionBarDrawerToggle(this,drawerLayout,toolbar,
@@ -84,13 +89,15 @@ public class LandingScreen extends AppCompatActivity implements NavigationView.O
         drawerLayout.addDrawerListener(toggle);
         toggle.syncState();
 
-        NavigationView navigationView=findViewById(R.id.nav_view);
-        navigationView.setNavigationItemSelectedListener(this);
+
 
         pd=new ProgressDialog(this);
         pd.setMessage("Loading...");
         pd.setCancelable(true);
         pd.setCanceledOnTouchOutside(false);
+
+        drawer_email.setText(FirebaseAuth.getInstance().getCurrentUser().getEmail());
+
 
         GoogleSignInOptions gso=new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestIdToken(getString(R.string.default_web_client_id))
@@ -102,25 +109,9 @@ public class LandingScreen extends AppCompatActivity implements NavigationView.O
         if(savedInstanceState==null)
         {
             getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
-                    new ProfileFragment()).commit();
-            navigationView.setCheckedItem(R.id.viewprofile);
+                    new HomeFragment()).commit();
+            navigationView.setCheckedItem(R.id.viewhome);
         }
 
-
-
-       /* logOut.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                pd.show();
-                FirebaseAuth.getInstance().signOut();
-                mGoogleSignInClient.signOut();
-                LoginManager.getInstance().logOut();
-                Toast.makeText(getApplicationContext(),"You have been logged out",Toast.LENGTH_SHORT).show();
-                pd.dismiss();
-                Intent intent=new Intent(getApplicationContext(),MainActivity.class);
-                startActivity(intent);
-                finish();
-            }
-        });*/
     }
 }
