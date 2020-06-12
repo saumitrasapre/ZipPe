@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.util.Patterns;
 import android.view.View;
 import android.widget.Button;
@@ -13,12 +14,19 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import Models.UserModel;
+
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.regex.Pattern;
 
 
@@ -27,9 +35,15 @@ public class Register extends AppCompatActivity {
     private TextView switchtologin;
     private FirebaseAuth mAuth;
     private EditText email,username,password,repeatpassword;
+    private static final String TAG = "Register";
     private TextInputLayout email_layout,username_layout,password_layout,repeat_password_layout;
+    private static final String KEY_EMAIL="email";
+    private static final String KEY_USERNAME="username";
+    private static final String KEY_UID="uid";
+    private FirebaseFirestore db=FirebaseFirestore.getInstance();
     private Button signUpBtn;
     private ProgressDialog pd;
+    private UserModel user;
     private static final Pattern PASSWORD_PATTERN=
             Pattern.compile("^" +
                     "(?=.*[0-9])" +         //at least 1 digit
@@ -105,6 +119,8 @@ public class Register extends AppCompatActivity {
                                             return;
                                             //Log.v("error",task.getResult().toString());
                                         } else {
+                                            createUserModel(v);
+                                            saveData(v);
                                             Intent myintent = new Intent(getApplicationContext(), LandingScreen.class);
                                             startActivity(myintent);
                                             pd.dismiss();
@@ -208,6 +224,37 @@ public class Register extends AppCompatActivity {
             repeat_password_layout.setError(null);
             return true;
         }
+    }
+
+    public void createUserModel(View view)
+    {
+        String emailString=email.getText().toString();
+        String usernameString=username.getText().toString();
+        String Uid=mAuth.getUid();
+
+        user=new UserModel(Uid,emailString,usernameString);
+    }
+
+    public void saveData(View view)
+    {
+        Map<String,Object> userData=new HashMap<>();
+        userData.put(KEY_UID,user.getUID());
+        userData.put(KEY_EMAIL,user.getEmail());
+        userData.put(KEY_USERNAME,user.getUsername());
+
+        db.collection("Users").document(user.getUID()).set(userData)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        Log.d(TAG, "onSuccess: User Data Uploaded");
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.d(TAG, "onFailure: User data upload failed "+e.toString());
+                    }
+                });
     }
 
 }

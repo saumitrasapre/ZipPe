@@ -1,6 +1,7 @@
 package com.example.zippe;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -10,7 +11,9 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -18,16 +21,30 @@ import com.facebook.login.LoginManager;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.ListenerRegistration;
 
 public class LandingScreen extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
-    ProgressDialog pd;
-    Toolbar toolbar;
-    DrawerLayout drawerLayout;
-    TextView drawer_email;
+    private ProgressDialog pd;
+    private FirebaseFirestore db=FirebaseFirestore.getInstance();
+    private DocumentReference userRef=db.collection("Users").document(FirebaseAuth.getInstance().getCurrentUser().getUid());
+    private Toolbar toolbar;
+    private DrawerLayout drawerLayout;
+    private TextView drawer_email,drawer_username;
     private GoogleSignInClient mGoogleSignInClient;
+
+    private static final String KEY_EMAIL="email";
+    private static final String KEY_USERNAME="username";
+    private static final String KEY_UID="uid";
 
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
@@ -82,10 +99,12 @@ public class LandingScreen extends AppCompatActivity implements NavigationView.O
         toolbar=findViewById(R.id.toolbar);
         drawerLayout=findViewById(R.id.drawer_layout);
         drawer_email=navigationView.getHeaderView(0).findViewById(R.id.drawer_email);
+        drawer_username=navigationView.getHeaderView(0).findViewById(R.id.drawer_username);
         setSupportActionBar(toolbar);
 
         ActionBarDrawerToggle toggle=new ActionBarDrawerToggle(this,drawerLayout,toolbar,
                 R.string.navigation_drawer_open,R.string.navigation_drawer_close);
+        toggle.getDrawerArrowDrawable().setColor(getResources().getColor(R.color.greencolor));
         drawerLayout.addDrawerListener(toggle);
         toggle.syncState();
 
@@ -96,8 +115,8 @@ public class LandingScreen extends AppCompatActivity implements NavigationView.O
         pd.setCancelable(true);
         pd.setCanceledOnTouchOutside(false);
 
-        drawer_email.setText(FirebaseAuth.getInstance().getCurrentUser().getEmail());
 
+        //loadUserData();
 
         GoogleSignInOptions gso=new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestIdToken(getString(R.string.default_web_client_id))
@@ -114,4 +133,55 @@ public class LandingScreen extends AppCompatActivity implements NavigationView.O
         }
 
     }
+
+    void loadUserData()
+    {
+        userRef.get()
+                .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                    @Override
+                    public void onSuccess(DocumentSnapshot documentSnapshot) {
+                        if(documentSnapshot.exists())
+                        {
+                            drawer_email.setText(documentSnapshot.getString(KEY_EMAIL));
+                            drawer_username.setText(documentSnapshot.getString(KEY_USERNAME));
+                        }
+                        else {
+                            Log.d("loadUserData", "Document does not exist ");
+                        }
+
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+
+                        Log.d("loadUserData", "Failed to retrieve user data "+e.toString());
+                    }
+                });
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        userRef.addSnapshotListener(this,new EventListener<DocumentSnapshot>() {
+            @Override
+            public void onEvent(@Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException e) {
+                if(e!=null)
+                {
+                    Log.d("loadUserData", "Failed to retrieve user data "+e.toString());
+                    return;
+                }
+
+                else if(documentSnapshot.exists())
+                {
+                    drawer_email.setText(documentSnapshot.getString(KEY_EMAIL));
+                    drawer_username.setText(documentSnapshot.getString(KEY_USERNAME));
+                }
+                else {
+                    Log.d("loadUserData", "Document does not exist ");
+                }
+            }
+        });
+    }
+
 }
