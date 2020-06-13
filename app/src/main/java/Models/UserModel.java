@@ -7,6 +7,11 @@ public class UserModel {
     String username;
     String profileUrl;
 
+    public UserModel()
+    {
+
+    }
+
     public UserModel(String UID, String email, String username, String profileUrl) {
         this.UID = UID;
         this.email = email;

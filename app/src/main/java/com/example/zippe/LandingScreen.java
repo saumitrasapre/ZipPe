@@ -10,6 +10,7 @@ import androidx.drawerlayout.widget.DrawerLayout;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
@@ -31,6 +32,9 @@ import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.ListenerRegistration;
+import com.squareup.picasso.Picasso;
+
+import de.hdodenhof.circleimageview.CircleImageView;
 
 public class LandingScreen extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
@@ -38,6 +42,7 @@ public class LandingScreen extends AppCompatActivity implements NavigationView.O
     private FirebaseFirestore db=FirebaseFirestore.getInstance();
     private DocumentReference userRef=db.collection("Users").document(FirebaseAuth.getInstance().getCurrentUser().getUid());
     private Toolbar toolbar;
+    private CircleImageView profileImage;
     private DrawerLayout drawerLayout;
     private TextView drawer_email,drawer_username;
     private GoogleSignInClient mGoogleSignInClient;
@@ -45,6 +50,7 @@ public class LandingScreen extends AppCompatActivity implements NavigationView.O
     private static final String KEY_EMAIL="email";
     private static final String KEY_USERNAME="username";
     private static final String KEY_UID="uid";
+    private static final String KEY_PROFILE_IMAGE="profileUrl";
 
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
@@ -101,6 +107,7 @@ public class LandingScreen extends AppCompatActivity implements NavigationView.O
         drawer_email=navigationView.getHeaderView(0).findViewById(R.id.drawer_email);
         drawer_username=navigationView.getHeaderView(0).findViewById(R.id.drawer_username);
         setSupportActionBar(toolbar);
+        profileImage=navigationView.getHeaderView(0).findViewById(R.id.profileImage);
 
         ActionBarDrawerToggle toggle=new ActionBarDrawerToggle(this,drawerLayout,toolbar,
                 R.string.navigation_drawer_open,R.string.navigation_drawer_close);
@@ -176,6 +183,8 @@ public class LandingScreen extends AppCompatActivity implements NavigationView.O
                 {
                     drawer_email.setText(documentSnapshot.getString(KEY_EMAIL));
                     drawer_username.setText(documentSnapshot.getString(KEY_USERNAME));
+                    profileImage.setBorderColor(Color.GRAY);
+                    Picasso.get().load(documentSnapshot.getString(KEY_PROFILE_IMAGE)).into(profileImage);
                 }
                 else {
                     Log.d("loadUserData", "Document does not exist ");

@@ -1,20 +1,39 @@
 package com.example.zippe;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.Manifest;
+import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.ContentResolver;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.Paint;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffXfermode;
+import android.graphics.Rect;
+import android.graphics.RectF;
+import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.util.Log;
 import android.util.Patterns;
 import android.view.View;
+import android.webkit.MimeTypeMap;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import Models.UserModel;
+import de.hdodenhof.circleimageview.CircleImageView;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -24,7 +43,17 @@ import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
+import com.squareup.picasso.Picasso;
+import com.theartofdev.edmodo.cropper.CropImage;
+import com.theartofdev.edmodo.cropper.CropImageView;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Pattern;
@@ -44,6 +73,10 @@ public class Register extends AppCompatActivity {
     private Button signUpBtn;
     private ProgressDialog pd;
     private UserModel user;
+    private ImageView camera_icon;
+    private CircleImageView choose_image;
+    private StorageReference mStorageRef;
+    private Uri mImageUri;
     private static final Pattern PASSWORD_PATTERN=
             Pattern.compile("^" +
                     "(?=.*[0-9])" +         //at least 1 digit
@@ -67,6 +100,10 @@ public class Register extends AppCompatActivity {
         password=findViewById(R.id.password);
         repeatpassword=findViewById(R.id.repeatPassword);
         signUpBtn=findViewById(R.id.signUpBtn);
+
+        camera_icon=findViewById(R.id.camera_icon);
+        choose_image=findViewById(R.id.choose_image);
+        mStorageRef= FirebaseStorage.getInstance().getReference("userUploads");
 
         email_layout=findViewById(R.id.email_layout);
         username_layout=findViewById(R.id.username_layout);
@@ -96,6 +133,14 @@ public class Register extends AppCompatActivity {
             }
         });
 
+        choose_image.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                CropImage.startPickImageActivity(Register.this);
+
+            }
+        });
+
         signUpBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -121,6 +166,7 @@ public class Register extends AppCompatActivity {
                                         } else {
                                             createUserModel(v);
                                             saveData(v);
+                                            uploadFile();
                                             Intent myintent = new Intent(getApplicationContext(), LandingScreen.class);
                                             startActivity(myintent);
                                             pd.dismiss();
@@ -142,7 +188,94 @@ public class Register extends AppCompatActivity {
                     }
                 }
             }
+
+
         });
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if(requestCode==CropImage.PICK_IMAGE_CHOOSER_REQUEST_CODE && resultCode== Activity.RESULT_OK)
+        {
+           Uri mUri=CropImage.getPickImageResultUri(this,data);
+            if(CropImage.isReadExternalStoragePermissionsRequired(this,mUri))
+            {
+                mImageUri=mUri;
+                requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},0);
+            }else
+            {
+                startCrop(mUri);
+            }
+        }
+
+        if(requestCode==CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE)
+        {
+            CropImage.ActivityResult result=CropImage.getActivityResult(data);
+            if(resultCode==RESULT_OK)
+            {
+                camera_icon.setVisibility(View.INVISIBLE);
+                mImageUri=result.getUri();
+                choose_image.setImageURI(mImageUri);
+            }
+        }
+
+    }
+
+    private void startCrop(Uri mUri) {
+        CropImage.activity(mUri).setGuidelines(CropImageView.Guidelines.ON)
+                .setMultiTouchEnabled(true)
+                .start(this);
+    }
+
+    private String getFileExtension(Uri uri)
+    {
+        String extension;
+
+        //Check uri format to avoid null
+        if (uri.getScheme().equals(ContentResolver.SCHEME_CONTENT)) {
+            //If scheme is a content
+            final MimeTypeMap mime = MimeTypeMap.getSingleton();
+            extension = mime.getExtensionFromMimeType(getApplicationContext().getContentResolver().getType(uri));
+        } else {
+            //If scheme is a File
+            //This will replace white spaces with %20 and also other special characters. This will avoid returning null values on file name with spaces and special characters.
+            extension = MimeTypeMap.getFileExtensionFromUrl(Uri.fromFile(new File(uri.getPath())).toString());
+
+        }
+        System.out.println("File extension= "+extension);
+        return extension;
+
+    }
+
+    private void uploadFile() {
+        if(mImageUri!=null)
+        {
+            StorageReference fileReference=mStorageRef.child(user.getUID()+"."+getFileExtension(mImageUri));
+
+            fileReference.putFile(mImageUri)
+                    .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                        @Override
+                        public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                            fileReference.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                                @Override
+                                public void onSuccess(Uri uri) {
+                                    user.setProfileUrl(uri.toString());
+                                    db.collection("Users").document(user.getUID()).set(user);
+                                    System.out.println(uri.toString());
+                                }
+                            });
+                            Log.d("ImageUpload", "onSuccess: Image Upload Successful ");
+                        }
+                    })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            Log.d("ImageUpload", "onFailure: Failed to upload image "+e.toString());
+                        }
+                    });
+        }
     }
 
     private boolean validateEmail()
@@ -256,5 +389,8 @@ public class Register extends AppCompatActivity {
                     }
                 });
     }
+
+
+
 
 }

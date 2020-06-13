@@ -4,16 +4,16 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#FFFFFF"
     android:orientation="vertical"
     android:padding="10dp"
-    android:background="#FFFFFF"
     tools:context=".MainActivity">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="5dp"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:padding="5dp">
 
         <TextView
             android:layout_width="wrap_content"
@@ -22,8 +22,8 @@
             android:fontFamily="sans-serif-medium"
             android:text="Sign Up"
             android:textColor="@color/blackcolor"
-            android:textSize="40dp"
-            />
+            android:textSize="40dp" />
+
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent">
@@ -54,102 +54,119 @@
             android:layout_gravity="center"
             android:layout_marginTop="5dp"
             android:background="@drawable/img">
+
             <RelativeLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content">
-            <ImageView
-                android:layout_width="130dp"
-                android:layout_height="130dp"
-                android:background="@drawable/avatarview"
-                />
 
                 <ImageView
+                    android:layout_width="130dp"
+                    android:layout_height="130dp"
+                    android:background="@drawable/avatarview" />
+
+                <ImageView
+                    android:id="@+id/camera_icon"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_centerInParent="true"
                     android:scaleX="1.005"
                     android:scaleY="1.005"
                     android:src="@drawable/ic_baseline_camera_alt_24" />
+
+
+                <de.hdodenhof.circleimageview.CircleImageView
+                    android:id="@+id/choose_image"
+                    android:layout_width="130dp"
+                    android:layout_height="130dp"
+                    android:layout_centerInParent="true"/>
+
             </RelativeLayout>
 
         </LinearLayout>
+
         <com.google.android.material.textfield.TextInputLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
             android:id="@+id/email_layout"
-            android:gravity="center"
-            android:layout_gravity="center"
-            android:layout_marginTop="10dp">
-        <EditText
-            android:id="@+id/email"
-            android:layout_width="280dp"
-            android:layout_height="45dp"
-            android:layout_gravity="center"
-            android:background="@drawable/edittextbottomborder"
-            android:hint="Email address"
-            android:inputType="textEmailAddress"
-            android:paddingLeft="15dp" />
-        </com.google.android.material.textfield.TextInputLayout>
-        <com.google.android.material.textfield.TextInputLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
+            android:layout_gravity="center"
+            android:layout_marginTop="10dp"
             android:gravity="center"
+            android:orientation="vertical">
+
+            <EditText
+                android:id="@+id/email"
+                android:layout_width="280dp"
+                android:layout_height="45dp"
+                android:layout_gravity="center"
+                android:background="@drawable/edittextbottomborder"
+                android:hint="Email address"
+                android:inputType="textEmailAddress"
+                android:paddingLeft="15dp" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/username_layout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:orientation="vertical"
             app:counterEnabled="true"
-            app:counterMaxLength="15"
-            android:layout_gravity="center">
-        <EditText
-            android:id="@+id/username"
-            android:layout_width="280dp"
-            android:layout_height="45dp"
-            android:layout_gravity="center"
-            android:layout_marginTop="10dp"
-            android:background="@drawable/edittextbottomborder"
-            android:hint="Username"
-            android:inputType="text"
-            android:paddingLeft="15dp" />
+            app:counterMaxLength="15">
+
+            <EditText
+                android:id="@+id/username"
+                android:layout_width="280dp"
+                android:layout_height="45dp"
+                android:layout_gravity="center"
+                android:layout_marginTop="10dp"
+                android:background="@drawable/edittextbottomborder"
+                android:hint="Username"
+                android:inputType="text"
+                android:paddingLeft="15dp" />
         </com.google.android.material.textfield.TextInputLayout>
 
 
         <com.google.android.material.textfield.TextInputLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:gravity="center"
             android:id="@+id/password_layout"
-            android:layout_gravity="center"
-            app:passwordToggleEnabled="true">
-        <EditText
-            android:id="@+id/password"
-            android:layout_width="280dp"
-            android:layout_height="45dp"
-            android:layout_gravity="center"
-            android:layout_marginTop="10dp"
-            android:background="@drawable/edittextbottomborder"
-            android:hint="Password"
-            android:inputType="textPassword"
-            android:paddingLeft="15dp" />
-        </com.google.android.material.textfield.TextInputLayout>
-        <com.google.android.material.textfield.TextInputLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
+            android:layout_gravity="center"
             android:gravity="center"
-            android:id="@+id/repeat_password_layout"
-            android:layout_gravity="center"
+            android:orientation="vertical"
             app:passwordToggleEnabled="true">
-        <EditText
-            android:id="@+id/repeatPassword"
-            android:layout_width="280dp"
-            android:layout_height="45dp"
+
+            <EditText
+                android:id="@+id/password"
+                android:layout_width="280dp"
+                android:layout_height="45dp"
+                android:layout_gravity="center"
+                android:layout_marginTop="10dp"
+                android:background="@drawable/edittextbottomborder"
+                android:hint="Password"
+                android:inputType="textPassword"
+                android:paddingLeft="15dp" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/repeat_password_layout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:layout_marginTop="10dp"
-            android:background="@drawable/edittextbottomborder"
-            android:hint="Retype Password"
-            android:inputType="textPassword"
-            android:paddingLeft="15dp" />
+            android:gravity="center"
+            android:orientation="vertical"
+            app:passwordToggleEnabled="true">
+
+            <EditText
+                android:id="@+id/repeatPassword"
+                android:layout_width="280dp"
+                android:layout_height="45dp"
+                android:layout_gravity="center"
+                android:layout_marginTop="10dp"
+                android:background="@drawable/edittextbottomborder"
+                android:hint="Retype Password"
+                android:inputType="textPassword"
+                android:paddingLeft="15dp" />
         </com.google.android.material.textfield.TextInputLayout>
 
 
@@ -162,9 +179,9 @@
             android:background="@drawable/joinbtn"
             android:elevation="200dp"
             android:text="SIGN UP"
-            android:textSize="20dp"
             android:textAllCaps="false"
-            android:textColor="@color/whitecolor" />
+            android:textColor="@color/whitecolor"
+            android:textSize="20dp" />
     </LinearLayout>
 </LinearLayout>
 
