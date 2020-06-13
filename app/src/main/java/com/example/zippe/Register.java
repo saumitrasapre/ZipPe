@@ -9,26 +9,16 @@ import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.ContentResolver;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Canvas;
-import android.graphics.Paint;
-import android.graphics.PorterDuff;
-import android.graphics.PorterDuffXfermode;
-import android.graphics.Rect;
-import android.graphics.RectF;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
-import android.provider.MediaStore;
 import android.util.Log;
 import android.util.Patterns;
 import android.view.View;
 import android.webkit.MimeTypeMap;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -46,14 +36,10 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
-import com.squareup.picasso.Picasso;
 import com.theartofdev.edmodo.cropper.CropImage;
 import com.theartofdev.edmodo.cropper.CropImageView;
 
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Pattern;
@@ -71,8 +57,9 @@ public class Register extends AppCompatActivity {
     private static final String KEY_UID="uid";
     private FirebaseFirestore db=FirebaseFirestore.getInstance();
     private Button signUpBtn;
+    private ImageButton cancel_profile_picture;
     private ProgressDialog pd;
-    private UserModel user;
+    private UserModel user=new UserModel();
     private ImageView camera_icon;
     private CircleImageView choose_image;
     private StorageReference mStorageRef;
@@ -100,6 +87,7 @@ public class Register extends AppCompatActivity {
         password=findViewById(R.id.password);
         repeatpassword=findViewById(R.id.repeatPassword);
         signUpBtn=findViewById(R.id.signUpBtn);
+        cancel_profile_picture=findViewById(R.id.cancel_profile_picture);
 
         camera_icon=findViewById(R.id.camera_icon);
         choose_image=findViewById(R.id.choose_image);
@@ -114,6 +102,8 @@ public class Register extends AppCompatActivity {
         pd.setMessage("Loading...");
         pd.setCancelable(true);
         pd.setCanceledOnTouchOutside(false);
+
+        mImageUri=Uri.parse("android.resource://"+getPackageName()+"/" + R.drawable.baseline_account_circle);
 
         mAuth=FirebaseAuth.getInstance();
 
@@ -138,6 +128,15 @@ public class Register extends AppCompatActivity {
             public void onClick(View v) {
                 CropImage.startPickImageActivity(Register.this);
 
+            }
+        });
+
+        cancel_profile_picture.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mImageUri=Uri.parse("android.resource://"+getPackageName()+"/" + R.drawable.baseline_account_circle);
+                choose_image.setImageDrawable(getDrawable(R.drawable.ic_baseline_person_24));
+                cancel_profile_picture.setVisibility(View.GONE);
             }
         });
 
@@ -218,6 +217,7 @@ public class Register extends AppCompatActivity {
                 camera_icon.setVisibility(View.INVISIBLE);
                 mImageUri=result.getUri();
                 choose_image.setImageURI(mImageUri);
+                cancel_profile_picture.setVisibility(View.VISIBLE);
             }
         }
 
@@ -364,8 +364,9 @@ public class Register extends AppCompatActivity {
         String emailString=email.getText().toString();
         String usernameString=username.getText().toString();
         String Uid=mAuth.getUid();
-
-        user=new UserModel(Uid,emailString,usernameString);
+        user.setUID(Uid);
+        user.setEmail(emailString);
+        user.setUsername(usernameString);
     }
 
     public void saveData(View view)

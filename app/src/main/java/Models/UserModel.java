@@ -9,7 +9,6 @@ public class UserModel {
 
     public UserModel()
     {
-
     }
 
     public UserModel(String UID, String email, String username, String profileUrl) {

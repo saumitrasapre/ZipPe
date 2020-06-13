@@ -44,10 +44,13 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.android.gms.*;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import org.w3c.dom.Text;
 
 import java.util.regex.Pattern;
+
+import Models.UserModel;
 
 public class MainActivity extends AppCompatActivity {
     //HELLO 123 ANDROID TESTING
@@ -62,6 +65,9 @@ public class MainActivity extends AppCompatActivity {
     private GoogleSignInClient mGoogleSignInClient;
     private int RC_SIGN_IN_GOOGLE=1;
     private FirebaseAuth.AuthStateListener authStateListener;
+
+    private FirebaseFirestore db=FirebaseFirestore.getInstance();
+    private UserModel user=new UserModel();
 
     private LoginButton fbloginButton;
     private CallbackManager mCallbackManager;
@@ -221,20 +227,31 @@ public class MainActivity extends AppCompatActivity {
         Log.d(TAG,"handleFacebookToken"+accessToken);
 
         AuthCredential credential= FacebookAuthProvider.getCredential(accessToken.getToken());
+        pd.show();
         mAuth.signInWithCredential(credential).addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
                 if(task.isSuccessful())
                 {
                     Log.d(TAG,"Sign in with credential successful");
-                    FirebaseUser user=mAuth.getCurrentUser();
+                    FirebaseUser fbuser=mAuth.getCurrentUser();
+
+                    user.setUsername(fbuser.getDisplayName());
+                    user.setEmail(fbuser.getEmail());
+                    user.setUID(fbuser.getUid());
+                    user.setProfileUrl(fbuser.getPhotoUrl().toString());
+                    db.collection("Users").document(user.getUID()).set(user);
+
                     Intent intent = new Intent(getApplicationContext(), LandingScreen.class);
                     startActivity(intent);
+                    pd.dismiss();
                 }
                 else
                 {
                     Log.d(TAG,"Sign in with credential failure",task.getException());
                     Toast.makeText(MainActivity.this,"Authentication Failed",Toast.LENGTH_SHORT).show();
+                    pd.dismiss();
+                    return;
                 }
             }
         });
@@ -281,17 +298,32 @@ public class MainActivity extends AppCompatActivity {
     private void FirebaseGoogleAuth(GoogleSignInAccount acc) {
 
         AuthCredential authCredential= GoogleAuthProvider.getCredential(acc.getIdToken(),null);
+        pd.show();
         mAuth.signInWithCredential(authCredential).addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
                 if (task.isSuccessful()) {
-                    Intent intent = new Intent(getApplicationContext(), LandingScreen.class);
-                    startActivity(intent);
-                    Toast.makeText(getApplicationContext(),"Signed In With Google",Toast.LENGTH_SHORT).show();
-                    finish();
+
+                    GoogleSignInAccount acct=GoogleSignIn.getLastSignedInAccount(getApplicationContext());
+                    if(acct!=null)
+                    {
+                        user.setUsername(acct.getDisplayName());
+                        user.setEmail(acct.getEmail());
+                        user.setUID(mAuth.getCurrentUser().getUid());
+                        user.setProfileUrl(acct.getPhotoUrl().toString());
+                        db.collection("Users").document(user.getUID()).set(user);
+
+                        Intent intent = new Intent(getApplicationContext(), LandingScreen.class);
+                        startActivity(intent);
+                        Toast.makeText(getApplicationContext(),"Signed In With Google",Toast.LENGTH_SHORT).show();
+                        finish();
+                        pd.dismiss();
+                    }
+
+
                 } else {
-                    //Toast.makeText(getApplicationContext(), "Error signing in...", Toast.LENGTH_SHORT).show();
-                    //pd.dismiss();
+                    Toast.makeText(getApplicationContext(), "Error signing in...", Toast.LENGTH_SHORT).show();
+                    pd.dismiss();
                     return;
                 }
             }

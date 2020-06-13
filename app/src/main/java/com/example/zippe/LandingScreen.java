@@ -183,7 +183,6 @@ public class LandingScreen extends AppCompatActivity implements NavigationView.O
                 {
                     drawer_email.setText(documentSnapshot.getString(KEY_EMAIL));
                     drawer_username.setText(documentSnapshot.getString(KEY_USERNAME));
-                    profileImage.setBorderColor(Color.GRAY);
                     Picasso.get().load(documentSnapshot.getString(KEY_PROFILE_IMAGE)).into(profileImage);
                 }
                 else {
