@@ -3,16 +3,21 @@ package com.example.zippe;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.res.ResourcesCompat;
 
 import android.Manifest;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.ContentResolver;
 import android.content.Intent;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.util.Patterns;
+import android.view.Gravity;
 import android.view.View;
 import android.webkit.MimeTypeMap;
 import android.widget.Button;
@@ -38,6 +43,7 @@ import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.theartofdev.edmodo.cropper.CropImage;
 import com.theartofdev.edmodo.cropper.CropImageView;
+import com.tooltip.Tooltip;
 
 import java.io.File;
 import java.util.HashMap;
@@ -64,6 +70,7 @@ public class Register extends AppCompatActivity {
     private CircleImageView choose_image;
     private StorageReference mStorageRef;
     private Uri mImageUri;
+    private Tooltip tooltip;
     private static final Pattern PASSWORD_PATTERN=
             Pattern.compile("^" +
                     "(?=.*[0-9])" +         //at least 1 digit
@@ -113,6 +120,27 @@ public class Register extends AppCompatActivity {
             startActivity(intent);
             finish();
         }
+
+        password.addTextChangedListener(registerTextWatcher);
+        password.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if(hasFocus)
+                {
+                    String input=password.getText().toString().trim();
+                    if(input.isEmpty())
+                    {
+                        showTooltip();
+                    }
+                }
+                else
+                {
+                    tooltip.dismiss();
+                }
+            }
+        });
+
+
 
         switchtologin.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -391,7 +419,40 @@ public class Register extends AppCompatActivity {
                 });
     }
 
+    private TextWatcher registerTextWatcher =new TextWatcher() {
+        @Override
+        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 
+
+        }
+
+        @Override
+        public void onTextChanged(CharSequence s, int start, int before, int count) {
+            String input=password.getText().toString().trim();
+            if(input.isEmpty())
+            {
+                showTooltip();
+            }
+        }
+
+        @Override
+        public void afterTextChanged(Editable s) {
+
+        }
+    };
+
+void showTooltip()
+{
+
+    tooltip=new Tooltip.Builder(password)
+            .setText("Must contain least 1 digit, 1 uppercase, 1 lowercase & 1 special character")
+            .setTextColor(Color.WHITE)
+            .setBackgroundColor(ResourcesCompat.getColor(getResources(),R.color.greencolor,null))
+            .setGravity(Gravity.BOTTOM)
+            .setCornerRadius(8f)
+            .setDismissOnClick(true)
+            .show();
+}
 
 
 }
