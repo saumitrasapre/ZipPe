@@ -8,14 +8,19 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.res.ResourcesCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
-import java.util.ArrayList;
+import com.squareup.picasso.Picasso;
+
+import java.util.List;
+
+import Models.ModelStore;
 
 public class StoreAdapter extends RecyclerView.Adapter<StoreAdapter.ViewHolder> {
    private Context mContext;
-   private ArrayList<ModelStore> mlist;
-    StoreAdapter(Context context, ArrayList<ModelStore> list)
+   private List<ModelStore> mlist;
+    StoreAdapter(Context context, List<ModelStore> list)
    {
        mContext=context;
        mlist=list;
@@ -32,15 +37,20 @@ public class StoreAdapter extends RecyclerView.Adapter<StoreAdapter.ViewHolder> 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         ModelStore store=mlist.get(position);
-        ImageView image=holder.item_image;
-        TextView name,place,price;
-        name=holder.item_name;
-        place=holder.item_place;
-        price=holder.item_price;
-        image.setImageResource(store.getImage());
-        name.setText(store.getName());
-        place.setText(store.getPlace());
-        price.setText(store.getPrice());
+        ImageView store_image=holder.store_image;
+        TextView store_name;
+        TextView store_category;
+        TextView store_rating;
+        store_name=holder.store_name;
+        store_category=holder.store_category;
+        store_rating=holder.store_rating;
+        Picasso.get()
+                .load(store.getMainImageUrl())
+                .placeholder(R.drawable.ic_baseline_local_grocery_store_24)
+                .into(store_image);
+        store_name.setText(store.getName());
+        store_category.setText(store.getCategory());
+        store_rating.setText(store.getRating());
     }
 
     @Override
@@ -49,15 +59,19 @@ public class StoreAdapter extends RecyclerView.Adapter<StoreAdapter.ViewHolder> 
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder{
-        ImageView item_image;
-        TextView item_name,item_place,item_price;
+        ImageView store_image;
+        TextView store_name,store_category,store_rating;
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
-            item_image=itemView.findViewById(R.id.item_image);
-            item_name=itemView.findViewById(R.id.item_name);
-            item_place=itemView.findViewById(R.id.item_place);
-            item_price=itemView.findViewById(R.id.item_price);
+            store_image=itemView.findViewById(R.id.item_image);
+            store_name=itemView.findViewById(R.id.item_name);
+            store_category=itemView.findViewById(R.id.item_category);
+            store_rating=itemView.findViewById(R.id.item_rating);
         }
+    }
+
+    public void update(List<ModelStore> mlist){
+        this.mlist=mlist;
     }
 
 }
