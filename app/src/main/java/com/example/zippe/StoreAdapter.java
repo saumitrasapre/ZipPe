@@ -4,6 +4,8 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Filter;
+import android.widget.Filterable;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -13,17 +15,20 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.squareup.picasso.Picasso;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import Models.ModelStore;
 
-public class StoreAdapter extends RecyclerView.Adapter<StoreAdapter.ViewHolder> {
+public class StoreAdapter extends RecyclerView.Adapter<StoreAdapter.ViewHolder> implements Filterable {
    private Context mContext;
    private List<ModelStore> mlist;
+   private List<ModelStore>mlistfull;
     StoreAdapter(Context context, List<ModelStore> list)
    {
        mContext=context;
        mlist=list;
+       mlistfull=new ArrayList<>(mlist);
    }
     @NonNull
     @Override
@@ -74,4 +79,42 @@ public class StoreAdapter extends RecyclerView.Adapter<StoreAdapter.ViewHolder> 
         this.mlist=mlist;
     }
 
+    @Override
+    public Filter getFilter() {
+        return mFilter;
+    }
+
+    private Filter mFilter=new Filter() {
+        @Override
+        protected FilterResults performFiltering(CharSequence constraint) {
+            List<ModelStore> filteredList=new ArrayList<>();
+
+            if(constraint.equals(null) || constraint.length()==0)
+            {
+                filteredList.addAll(mlistfull);
+            }
+            else {
+                String filterPattern=constraint.toString().toLowerCase().trim();
+
+                for(ModelStore item:mlistfull)
+                {
+                    if(item.getName().toLowerCase().contains(filterPattern))
+                    {
+                        filteredList.add(item);
+                    }
+                }
+            }
+            FilterResults results =new FilterResults();
+            results.values=filteredList;
+            return results;
+        }
+
+        @Override
+        protected void publishResults(CharSequence constraint, FilterResults results) {
+
+            mlist.clear();
+            mlist.addAll((List)results.values);
+            notifyDataSetChanged();
+        }
+    };
 }
