@@ -56,6 +56,7 @@ public class StoreAdapter extends RecyclerView.Adapter<StoreAdapter.ViewHolder> 
         store_name.setText(store.getName());
         store_category.setText(store.getCategory());
         store_rating.setText(store.getRating());
+        store_image.setClipToOutline(true);
     }
 
     @Override
