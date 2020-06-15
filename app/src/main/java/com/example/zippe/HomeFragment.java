@@ -18,7 +18,9 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
@@ -44,34 +46,37 @@ public  class HomeFragment extends Fragment {
         mProgressCircle=view.findViewById(R.id.progress_circle);
 
         mStores=new ArrayList<ModelStore>();
-        storedb.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+        storedb.addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
-            public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-                if(queryDocumentSnapshots.isEmpty())
+            public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
+                if(e!=null)
                 {
-                    Log.d("fetchstores", "onSuccess:Store List Empty ");
+                    Toast.makeText(getContext(), "Error fetching data", Toast.LENGTH_SHORT).show();
+                    Log.d("datafetch", "onEvent: Error fetching data "+e.toString());
                     mProgressCircle.setVisibility(View.GONE);
-                    return;
                 }
                 else
                 {
-                    List<ModelStore> temp =queryDocumentSnapshots.toObjects(ModelStore.class);
-                    mStores.addAll(temp);
-                    System.out.println(mStores.get(0).getName());
-                    Log.d("fetchstores", "onSuccess: Store List Fetched ");
-                   mAdapter=new StoreAdapter(getContext(),mStores);
-                    //adapter.update(mStores)
-                    mAdapter.notifyDataSetChanged();
-                    recyclerView.setAdapter(mAdapter);
-                    mProgressCircle.setVisibility(View.GONE);
+                    if(queryDocumentSnapshots.isEmpty())
+                    {
+                        Log.d("fetchstores", "onSuccess:Store List Empty ");
+                        mProgressCircle.setVisibility(View.GONE);
+                        return;
+                    }
+                    else
+                    {
+                        List<ModelStore> temp =queryDocumentSnapshots.toObjects(ModelStore.class);
+                        mStores.addAll(temp);
+                       // System.out.println(mStores.get(0).getName());
+                        Log.d("fetchstores", "onSuccess: Store List Fetched ");
+                        mAdapter=new StoreAdapter(getContext(),mStores);
+                        //adapter.update(mStores)
+                        mAdapter.notifyDataSetChanged();
+                        recyclerView.setAdapter(mAdapter);
+                        mProgressCircle.setVisibility(View.GONE);
 
+                    }
                 }
-            }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                Toast.makeText(getContext(), "Error fetching data", Toast.LENGTH_SHORT).show();
-                mProgressCircle.setVisibility(View.GONE);
             }
         });
 
