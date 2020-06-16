@@ -8,23 +8,34 @@ public class ModelStore {
     private String rating;
     private String category;
     private List<String> otherImages;
+    private String address;
 
     public ModelStore() {
     }
 
-    public ModelStore(String mainImageUrl, String name, String rating, String category, List<String> otherImages) {
+    public ModelStore(String mainImageUrl, String name, String rating, String category, List<String> otherImages, String address) {
         this.mainImageUrl = mainImageUrl;
         this.name = name;
         this.rating = rating;
         this.category = category;
         this.otherImages = otherImages;
+        this.address = address;
     }
 
-    public ModelStore(String mainImageUrl, String name, String rating, String category) {
+    public ModelStore(String mainImageUrl, String name, String rating, String category, String address) {
         this.mainImageUrl = mainImageUrl;
         this.name = name;
         this.rating = rating;
         this.category = category;
+        this.address = address;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
     }
 
     public String getMainImageUrl() {

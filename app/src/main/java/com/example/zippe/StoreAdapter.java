@@ -22,7 +22,6 @@ import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import Models.ModelStore;
 
 public class StoreAdapter extends RecyclerView.Adapter<StoreAdapter.ViewHolder> implements Filterable {
@@ -48,10 +47,10 @@ public class StoreAdapter extends RecyclerView.Adapter<StoreAdapter.ViewHolder> 
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         ModelStore store=mlist.get(position);
         ImageView store_image=holder.store_image;
+        store_image.setClipToOutline(true);
         TextView store_name;
         TextView store_category;
         TextView store_rating;
-        TextView store_bottom_name;
         store_name=holder.store_name;
         store_category=holder.store_category;
         store_rating=holder.store_rating;
@@ -74,8 +73,10 @@ public class StoreAdapter extends RecyclerView.Adapter<StoreAdapter.ViewHolder> 
                 bottomSheetDialog.setContentView(bottomSheetView);
                 TextView bottomname=bottomSheetView.findViewById(R.id.bottom_name);
                 bottomname.setText(store.getName());
-                TextView bottomrating=bottomSheetView.findViewById(R.id.item_rating);
+                TextView bottomrating=bottomSheetView.findViewById(R.id.bottom_item_rating);
                 bottomrating.setText(store.getRating());
+                TextView bottomAddress=bottomSheetView.findViewById(R.id.bottom_address);
+                bottomAddress.setText(store.getAddress());
                 bottomSheetDialog.show();
 
 

@@ -1,23 +1,119 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/homefragment"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fitsSystemWindows="true"
-    android:id="@+id/homefragment">
+    android:fitsSystemWindows="true">
 
-        <ProgressBar
-            android:id="@+id/progress_circle"
+    <com.google.android.material.chip.ChipGroup
+        android:id="@+id/sort_chip_group"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:background="@android:color/white"
+        android:elevation="0dp"
+        android:padding="5dp"
+        app:singleSelection="true">
+
+        <com.google.android.material.chip.Chip
+            android:id="@+id/supermarket_chip"
+            style="@style/Widget.MaterialComponents.Chip.Filter"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_centerInParent="true"/>
+            android:text="Super Market"
+            android:theme="@style/Theme.MaterialComponents.Light"
+            app:chipBackgroundColor="@android:color/white"
+            app:chipStrokeColor="@color/greencolor"
+            app:chipStrokeWidth="1dp" />
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/stores"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
+        <com.google.android.material.chip.Chip
+            android:id="@+id/shoppingmall_chip"
+            style="@style/Widget.MaterialComponents.Chip.Filter"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Shopping Mall"
+            android:theme="@style/Theme.MaterialComponents.Light"
+            app:chipBackgroundColor="@android:color/white"
+            app:chipStrokeColor="@color/greencolor"
+            app:chipStrokeWidth="1dp" />
 
-        </androidx.recyclerview.widget.RecyclerView>
+        <com.google.android.material.chip.Chip
+            android:id="@+id/electronics_chip"
+            style="@style/Widget.MaterialComponents.Chip.Filter"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Electronics"
+            android:theme="@style/Theme.MaterialComponents.Light"
+            app:chipBackgroundColor="@android:color/white"
+            app:chipStrokeColor="@color/greencolor"
+            app:chipStrokeWidth="1dp" />
 
+        <com.google.android.material.chip.Chip
+            style="@style/Widget.MaterialComponents.Chip.Filter"
+            android:id="@+id/clothing_chip"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Clothing"
+            android:theme="@style/Theme.MaterialComponents.Light"
+            app:chipBackgroundColor="@android:color/white"
+            app:chipStrokeColor="@color/greencolor"
+            app:chipStrokeWidth="1dp" />
+
+        <com.google.android.material.chip.Chip
+            android:id="@+id/fruit_veggies_chip"
+            style="@style/Widget.MaterialComponents.Chip.Filter"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Fruits/Veggies"
+            android:theme="@style/Theme.MaterialComponents.Light"
+            app:chipBackgroundColor="@android:color/white"
+            app:chipStrokeColor="@color/greencolor"
+            app:chipStrokeWidth="1dp" />
+
+        <com.google.android.material.chip.Chip
+            android:id="@+id/groceries_chip"
+            style="@style/Widget.MaterialComponents.Chip.Filter"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Groceries"
+            android:theme="@style/Theme.MaterialComponents.Light"
+            app:chipBackgroundColor="@android:color/white"
+            app:chipStrokeColor="@color/greencolor"
+            app:chipStrokeWidth="1dp" />
+
+        <com.google.android.material.chip.Chip
+            android:id="@+id/medical_chip"
+            style="@style/Widget.MaterialComponents.Chip.Filter"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Medical"
+            android:theme="@style/Theme.MaterialComponents.Light"
+            app:chipBackgroundColor="@android:color/white"
+            app:chipStrokeColor="@color/greencolor"
+            app:chipStrokeWidth="1dp" />
+    </com.google.android.material.chip.ChipGroup>
+
+    <ProgressBar
+        android:id="@+id/progress_circle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:text="No stores found :("
+        android:visibility="gone"
+        android:id="@+id/no_items"/>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/stores"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/sort_chip_group">
+
+    </androidx.recyclerview.widget.RecyclerView>
 
 </RelativeLayout>
