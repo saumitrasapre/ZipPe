@@ -96,7 +96,8 @@ public class StoreAdapter extends RecyclerView.Adapter<StoreAdapter.ViewHolder> 
                 getDirection.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        String geoUri = "http://maps.google.com/maps?q=loc:" + storeLoc.getLatitude() + "," + storeLoc.getLongitude() + " (" + "Dmart" + ")";
+                        //String geoUri = "http://maps.google.com/maps?q=loc:" + storeLoc.getLatitude() + "," + storeLoc.getLongitude() + " (" + "Dmart" + ")";
+                        String geoUri = "https://maps.app.goo.gl/UYC3igVovFPEtLyv6";
                         Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(geoUri));
                         bottomSheetDialog.getContext().startActivity(intent);
 
