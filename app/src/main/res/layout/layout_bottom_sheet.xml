@@ -64,7 +64,7 @@
 
         <TextView
             android:id="@+id/bottom_address"
-            android:layout_width="wrap_content"
+            android:layout_width="270dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
             android:text="Store Address" />
@@ -75,6 +75,7 @@
             android:layout_gravity="top|right"
             android:background="@android:color/transparent"
             android:padding="20dp"
+            android:layout_margin="20dp"
             android:src="@drawable/ic_baseline_location_on_24" />
 
     </FrameLayout>
