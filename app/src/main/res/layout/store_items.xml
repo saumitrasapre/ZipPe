@@ -30,6 +30,7 @@
             android:fontFamily="sans-serif-light"
             android:textColor="@android:color/white"
             android:textStyle="bold"
+            android:paddingRight="20dp"
             android:textSize="14sp" />
 
         <TextView
@@ -52,6 +53,7 @@
             android:textSize="30sp"
             android:textColor="@android:color/white"
             android:fontFamily="sans-serif-condensed-medium"
+            android:paddingLeft="20dp"
             android:textStyle="bold" />
 
     </FrameLayout>

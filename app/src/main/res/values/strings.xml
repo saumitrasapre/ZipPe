@@ -5,4 +5,6 @@
     <string name="fb_login_protocol_scheme">fb395249444705973</string>
     <string name="navigation_drawer_open">Open Navigation Drawer</string>
     <string name="navigation_drawer_close">Close Navigation Drawer</string>
+
+
 </resources>

@@ -6,14 +6,19 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Filter;
 import android.widget.Filterable;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.squareup.picasso.Picasso;
+
+import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -46,6 +51,7 @@ public class StoreAdapter extends RecyclerView.Adapter<StoreAdapter.ViewHolder> 
         TextView store_name;
         TextView store_category;
         TextView store_rating;
+        TextView store_bottom_name;
         store_name=holder.store_name;
         store_category=holder.store_category;
         store_rating=holder.store_rating;
@@ -57,6 +63,24 @@ public class StoreAdapter extends RecyclerView.Adapter<StoreAdapter.ViewHolder> 
         store_category.setText(store.getCategory());
         store_rating.setText(store.getRating());
         store_image.setClipToOutline(true);
+
+
+        holder.store_image.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v) {
+                final BottomSheetDialog bottomSheetDialog=new BottomSheetDialog(holder.store_image.getContext(),R.style.BottomSheetDialogTheme);
+                View bottomSheetView = LayoutInflater.from(holder.store_image.getContext()).inflate(R.layout.layout_bottom_sheet,(LinearLayout)v.findViewById(R.id.bottomSheetContainer));
+                bottomSheetDialog.setContentView(bottomSheetView);
+                TextView bottomname=bottomSheetView.findViewById(R.id.bottom_name);
+                bottomname.setText(store.getName());
+                TextView bottomrating=bottomSheetView.findViewById(R.id.item_rating);
+                bottomrating.setText(store.getRating());
+                bottomSheetDialog.show();
+
+
+            }
+        });
     }
 
     @Override
@@ -64,7 +88,7 @@ public class StoreAdapter extends RecyclerView.Adapter<StoreAdapter.ViewHolder> 
         return mlist.size();
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder{
+    public class ViewHolder extends RecyclerView.ViewHolder  {
         ImageView store_image;
         TextView store_name,store_category,store_rating;
         public ViewHolder(@NonNull View itemView) {
@@ -72,7 +96,21 @@ public class StoreAdapter extends RecyclerView.Adapter<StoreAdapter.ViewHolder> 
             store_image=itemView.findViewById(R.id.item_image);
             store_name=itemView.findViewById(R.id.item_name);
             store_category=itemView.findViewById(R.id.item_category);
-            store_rating=itemView.findViewById(R.id.item_rating);
+            store_rating=itemView.findViewById(R.id.item_rating);//
+//            itemView.setOnClickListener(new View.OnClickListener()
+//            {
+//                @Override
+//                public void onClick(View v) {
+//
+//
+//                    final BottomSheetDialog bottomSheetDialog=new BottomSheetDialog(itemView.getContext(),R.style.BottomSheetDialogTheme);
+//                    View bottomSheetView = LayoutInflater.from(itemView.getContext()).inflate(R.layout.layout_bottom_sheet,(LinearLayout)v.findViewById(R.id.bottomSheetContainer));
+//                    bottomSheetDialog.setContentView(bottomSheetView);
+//                    bottomSheetDialog.show();
+//
+//
+//                }
+//            });
         }
     }
 

@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:id="@+id/bottomSheetContainer">
+    
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:padding="15dp"
+        android:text="MORE INFO"
+        android:textColor="@color/bottomprimarytext"
+        android:textSize="18sp"
+        />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/bottomdivider"
+        android:layout_marginBottom="10dp" />
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="5dp">
+
+        <TextView
+            android:layout_marginTop="50dp"
+            android:id="@+id/bottom_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="STORENAME"
+            android:textColor="@color/blackcolor"
+            android:textStyle="bold"
+            android:textSize="40sp"
+            android:fontFamily="sans-serif-black"/>
+
+        <TextView
+            android:layout_marginTop="50dp"
+            android:id="@+id/item_rating"
+            android:layout_width="50dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="right"
+            android:background="@drawable/capsule"
+            android:gravity="center"
+            android:text="Rating"
+            android:textColor="@color/whitecolor" />
+
+    </FrameLayout>
+
+    <ImageButton
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_marginTop="50dp"
+        android:layout_gravity="right"
+        android:src="@drawable/ic_baseline_location_on_24"/>
+
+    <Button
+        android:layout_marginTop="50dp"
+        android:layout_width="300dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|center"
+        android:text="VISIT STORE"
+        android:textSize="20sp"
+        android:layout_marginBottom="30dp"
+        android:textColor="@color/whitecolor"
+        android:background="@drawable/button_background"
+        />
+        
+
+</LinearLayout>
