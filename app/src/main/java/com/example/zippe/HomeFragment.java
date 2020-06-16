@@ -24,7 +24,10 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipGroup;
 import com.google.firebase.firestore.CollectionReference;
@@ -50,6 +53,7 @@ public class HomeFragment extends Fragment {
     private List<ModelStore> mStores;
     private List<ModelStore> mStoreslistfull;
     private CollectionReference storedb = db.collection("Stores");
+    private SwipeRefreshLayout swipeRefreshLayout;
 
     @Nullable
     @Override
@@ -59,16 +63,11 @@ public class HomeFragment extends Fragment {
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         noItems = view.findViewById(R.id.no_items);
+        swipeRefreshLayout=view.findViewById(R.id.swipeRefreshLayout);
 
         sortChipGroup = view.findViewById(R.id.sort_chip_group);
 
-       /* superMarket_chip = view.findViewById(R.id.supermarket_chip);
-        shoppingMall_chip = view.findViewById(R.id.shoppingmall_chip);
-        electronics_chip = view.findViewById(R.id.electronics_chip);
-        clothing_chip = view.findViewById(R.id.clothing_chip);
-        fruitsVeggies_chip = view.findViewById(R.id.fruit_veggies_chip);
-        groceries_chip = view.findViewById(R.id.groceries_chip);
-        medical_chip = view.findViewById(R.id.medical_chip);*/
+
 
         mProgressCircle = view.findViewById(R.id.progress_circle);
         setHasOptionsMenu(true);
@@ -102,6 +101,50 @@ public class HomeFragment extends Fragment {
 
                     }
                 }
+            }
+        });
+
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+
+                storedb.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                    @Override
+                    public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                        if(queryDocumentSnapshots.isEmpty())
+                        {
+                            Log.d("fetchstores", "onSuccess:Store List Empty ");
+                            mProgressCircle.setVisibility(View.GONE);
+                            swipeRefreshLayout.setRefreshing(false);
+                            return;
+                        }
+                        else
+                        {
+                            List<ModelStore> temp = queryDocumentSnapshots.toObjects(ModelStore.class);
+                            mStores.addAll(temp);
+                            mStoreslistfull = new ArrayList<>(mStores);
+                            // System.out.println(mStores.get(0).getName());
+                            Log.d("fetchstores", "onSuccess: Store List Fetched ");
+                            mAdapter = new StoreAdapter(getContext(), mStores);
+                            //adapter.update(mStores)
+                            mAdapter.notifyDataSetChanged();
+                            recyclerView.setAdapter(mAdapter);
+                            mProgressCircle.setVisibility(View.GONE);
+                            swipeRefreshLayout.setRefreshing(false);
+
+                        }
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Toast.makeText(getContext(), "Error fetching data", Toast.LENGTH_SHORT).show();
+                        mProgressCircle.setVisibility(View.GONE);
+                        swipeRefreshLayout.setRefreshing(false);
+                    }
+                });
+
+
+
             }
         });
 
@@ -216,108 +259,6 @@ public class HomeFragment extends Fragment {
 
             }
         });
-
-        /*superMarket_chip.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if(isChecked==true)
-                {
-                    System.out.println("Supermarket chip checked");
-                }
-                else
-                {
-                    System.out.println("Supermarket chip unchecked");
-                }
-
-            }
-        });
-
-        shoppingMall_chip.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-
-                if(isChecked==true)
-                {
-                    System.out.println("Shopping Mall chip checked");
-                }
-                else
-                {
-                    System.out.println("Shopping Mall chip unchecked");
-                }
-
-            }
-        });
-
-        electronics_chip.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if(isChecked==true)
-                {
-                    System.out.println("Electronics chip checked");
-                }
-                else
-                {
-                    System.out.println("Electronics chip unchecked");
-                }
-            }
-        });
-
-        clothing_chip.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if(isChecked==true)
-                {
-                    System.out.println("Clothing chip checked");
-                }
-                else
-                {
-                    System.out.println("Clothing chip unchecked");
-                }
-            }
-        });
-
-        fruitsVeggies_chip.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-
-                if(isChecked==true)
-                {
-                    System.out.println("Fruits chip checked");
-                }
-                else
-                {
-                    System.out.println("Fruits chip unchecked");
-                }
-            }
-        });
-
-        groceries_chip.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if(isChecked==true)
-                {
-                    System.out.println("Groceries chip checked");
-                }
-                else
-                {
-                    System.out.println("Groceries chip unchecked");
-                }
-            }
-        });
-
-        medical_chip.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if(isChecked==true)
-                {
-                    System.out.println("Medical chip checked");
-                }
-                else
-                {
-                    System.out.println("Medical chip unchecked");
-                }
-            }
-        });*/
 
         return view;
 
