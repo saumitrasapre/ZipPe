@@ -15,6 +15,8 @@ import androidx.annotation.NonNull;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.denzcoskun.imageslider.ImageSlider;
+import com.denzcoskun.imageslider.models.SlideModel;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.squareup.picasso.Picasso;
 
@@ -28,6 +30,8 @@ public class StoreAdapter extends RecyclerView.Adapter<StoreAdapter.ViewHolder> 
    private Context mContext;
    private List<ModelStore> mlist;
    private List<ModelStore>mlistfull;
+   private ImageSlider imageSlider;
+   private List<String>images;
     StoreAdapter(Context context, List<ModelStore> list)
    {
        mContext=context;
@@ -71,6 +75,16 @@ public class StoreAdapter extends RecyclerView.Adapter<StoreAdapter.ViewHolder> 
                 final BottomSheetDialog bottomSheetDialog=new BottomSheetDialog(holder.store_image.getContext(),R.style.BottomSheetDialogTheme);
                 View bottomSheetView = LayoutInflater.from(holder.store_image.getContext()).inflate(R.layout.layout_bottom_sheet,(LinearLayout)v.findViewById(R.id.bottomSheetContainer));
                 bottomSheetDialog.setContentView(bottomSheetView);
+                imageSlider=bottomSheetView.findViewById(R.id.image_slider);
+
+                List<SlideModel> slideModels=new ArrayList<>();
+                images=new ArrayList<>(store.getOtherImages());
+                for(String item:images)
+                {
+                    slideModels.add(new SlideModel(item));
+                }
+                imageSlider.setImageList(slideModels,true);
+
                 TextView bottomname=bottomSheetView.findViewById(R.id.bottom_name);
                 bottomname.setText(store.getName());
                 TextView bottomrating=bottomSheetView.findViewById(R.id.bottom_item_rating);
