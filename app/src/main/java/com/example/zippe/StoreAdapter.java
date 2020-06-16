@@ -1,12 +1,15 @@
 package com.example.zippe;
 
 import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Filter;
 import android.widget.Filterable;
 import android.widget.FrameLayout;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -18,12 +21,15 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.denzcoskun.imageslider.ImageSlider;
 import com.denzcoskun.imageslider.models.SlideModel;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
+import com.google.firebase.firestore.GeoPoint;
 import com.squareup.picasso.Picasso;
 
 import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
+
 import Models.ModelStore;
 
 public class StoreAdapter extends RecyclerView.Adapter<StoreAdapter.ViewHolder> implements Filterable {
@@ -32,6 +38,7 @@ public class StoreAdapter extends RecyclerView.Adapter<StoreAdapter.ViewHolder> 
    private List<ModelStore>mlistfull;
    private ImageSlider imageSlider;
    private List<String>images;
+   private ImageButton getDirection;
     StoreAdapter(Context context, List<ModelStore> list)
    {
        mContext=context;
@@ -83,8 +90,18 @@ public class StoreAdapter extends RecyclerView.Adapter<StoreAdapter.ViewHolder> 
                 {
                     slideModels.add(new SlideModel(item));
                 }
+                GeoPoint storeLoc=store.getLocation();
                 imageSlider.setImageList(slideModels,true);
+                getDirection=bottomSheetView.findViewById(R.id.get_direction);
+                getDirection.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        String geoUri = "http://maps.google.com/maps?q=loc:" + storeLoc.getLatitude() + "," + storeLoc.getLongitude() + " (" + "Dmart" + ")";
+                        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(geoUri));
+                        bottomSheetDialog.getContext().startActivity(intent);
 
+                    }
+                });
                 TextView bottomname=bottomSheetView.findViewById(R.id.bottom_name);
                 bottomname.setText(store.getName());
                 TextView bottomrating=bottomSheetView.findViewById(R.id.bottom_item_rating);

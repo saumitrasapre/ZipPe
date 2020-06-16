@@ -1,5 +1,7 @@
 package Models;
 
+import com.google.firebase.firestore.GeoPoint;
+
 import java.util.List;
 
 public class ModelStore {
@@ -9,6 +11,7 @@ public class ModelStore {
     private String category;
     private List<String> otherImages;
     private String address;
+    private GeoPoint location;
 
     public ModelStore() {
     }
@@ -36,6 +39,14 @@ public class ModelStore {
 
     public void setAddress(String address) {
         this.address = address;
+    }
+
+    public GeoPoint getLocation() {
+        return location;
+    }
+
+    public void setLocation(GeoPoint location) {
+        this.location = location;
     }
 
     public String getMainImageUrl() {

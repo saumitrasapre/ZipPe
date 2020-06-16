@@ -1,9 +1,11 @@
 package com.example.zippe;
 
+import android.app.Activity;
+import android.content.pm.PackageManager;
+import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -11,7 +13,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
-import android.widget.CompoundButton;
 import android.widget.ProgressBar;
 
 import androidx.appcompat.widget.SearchView;
@@ -21,11 +22,14 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.chip.Chip;
@@ -34,12 +38,15 @@ import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.GeoPoint;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import Models.ModelStore;
+
+import static android.Manifest.permission.ACCESS_FINE_LOCATION;
 
 public class HomeFragment extends Fragment {
 
@@ -48,12 +55,12 @@ public class HomeFragment extends Fragment {
     private ProgressBar mProgressCircle;
     private ChipGroup sortChipGroup;
     private TextView noItems;
-    private Chip superMarket_chip, shoppingMall_chip, electronics_chip, clothing_chip, fruitsVeggies_chip, groceries_chip, medical_chip;
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
     private List<ModelStore> mStores;
     private List<ModelStore> mStoreslistfull;
     private CollectionReference storedb = db.collection("Stores");
     private SwipeRefreshLayout swipeRefreshLayout;
+    private FusedLocationProviderClient client;
 
     @Nullable
     @Override
@@ -63,11 +70,14 @@ public class HomeFragment extends Fragment {
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         noItems = view.findViewById(R.id.no_items);
-        swipeRefreshLayout=view.findViewById(R.id.swipeRefreshLayout);
+        swipeRefreshLayout = view.findViewById(R.id.swipeRefreshLayout);
 
         sortChipGroup = view.findViewById(R.id.sort_chip_group);
 
+        client = LocationServices.getFusedLocationProviderClient(getContext());
 
+        requestPermission();
+        getMylocation();
 
         mProgressCircle = view.findViewById(R.id.progress_circle);
         setHasOptionsMenu(true);
@@ -111,15 +121,12 @@ public class HomeFragment extends Fragment {
                 storedb.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
                     @Override
                     public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-                        if(queryDocumentSnapshots.isEmpty())
-                        {
+                        if (queryDocumentSnapshots.isEmpty()) {
                             Log.d("fetchstores", "onSuccess:Store List Empty ");
                             mProgressCircle.setVisibility(View.GONE);
                             swipeRefreshLayout.setRefreshing(false);
                             return;
-                        }
-                        else
-                        {
+                        } else {
                             List<ModelStore> temp = queryDocumentSnapshots.toObjects(ModelStore.class);
                             mStores.addAll(temp);
                             mStoreslistfull = new ArrayList<>(mStores);
@@ -142,7 +149,6 @@ public class HomeFragment extends Fragment {
                         swipeRefreshLayout.setRefreshing(false);
                     }
                 });
-
 
 
             }
@@ -224,8 +230,7 @@ public class HomeFragment extends Fragment {
                             }
 
                             mAdapter.notifyDataSetChanged();
-                        }
-                        else if (checkedId == R.id.medical_chip) {
+                        } else if (checkedId == R.id.medical_chip) {
                             filterPattern = "Medical";
                             System.out.println("Medical chip checked");
 
@@ -262,6 +267,38 @@ public class HomeFragment extends Fragment {
 
         return view;
 
+    }
+
+    private void getMylocation() {
+
+        if (ActivityCompat.checkSelfPermission(getContext(), ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return;
+        }
+        client.getLastLocation().addOnSuccessListener((Activity) getContext(), new OnSuccessListener<Location>() {
+            @Override
+            public void onSuccess(Location location) {
+                if(location!= null)
+                {
+                    Location dmart=new Location("");
+                    dmart.setLatitude(18.566758);
+                    dmart.setLongitude(73.807233);
+                    double distance = location.distanceTo(dmart);
+                    Log.d("location", "onSuccess: Distance is "+distance);
+                }
+            }
+        });
+    }
+
+    private void requestPermission()
+    {
+        ActivityCompat.requestPermissions(getActivity(),new String[]{ACCESS_FINE_LOCATION},1);
     }
 
     @Override
