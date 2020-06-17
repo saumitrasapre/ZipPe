@@ -235,9 +235,7 @@ public class HomeFragment extends Fragment {
                     try {
                         List<Address> addresses = geocoder.getFromLocation(location.getLatitude(), location.getLongitude(), 1);
                         Log.d("location", "onSuccess: " + addresses.get(0).getSubLocality());
-                        //  Log.d("location", "onSuccess: "+addresses.get(1).getSubLocality());
                         Log.d("location", "onSuccess: PinCode1 is " + addresses.get(0).getPostalCode());
-                        //Log.d("location", "onSuccess: PinCode2 is "+addresses.get(1).getPostalCode());
                         clientPostalCode = addresses.get(0).getPostalCode();
                         mStores.clear();
 
@@ -258,10 +256,8 @@ public class HomeFragment extends Fragment {
                                                 List<ModelStore> temp = queryDocumentSnapshots.toObjects(ModelStore.class);
                                                 mStores.addAll(temp);
                                                 mStoreslistfull = new ArrayList<>(mStores);
-                                                // System.out.println(mStores.get(0).getName());
                                                 Log.d("fetchstores", "onSuccess: Store List Fetched ");
                                                 mAdapter = new StoreAdapter(getContext(), mStores);
-                                                //adapter.update(mStores)
                                                 mAdapter.notifyDataSetChanged();
                                                 recyclerView.setAdapter(mAdapter);
                                                 mProgressCircle.setVisibility(View.GONE);

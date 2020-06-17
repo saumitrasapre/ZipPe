@@ -1,7 +1,10 @@
 package com.example.zippe;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.location.Location;
 import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,22 +18,30 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.core.app.ActivityCompat;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.denzcoskun.imageslider.ImageSlider;
 import com.denzcoskun.imageslider.models.SlideModel;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.firebase.firestore.GeoPoint;
 import com.squareup.picasso.Picasso;
 
 import org.w3c.dom.Text;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
 import Models.ModelStore;
+
+import static android.Manifest.permission.ACCESS_FINE_LOCATION;
 
 public class StoreAdapter extends RecyclerView.Adapter<StoreAdapter.ViewHolder> implements Filterable {
    private Context mContext;
@@ -39,12 +50,15 @@ public class StoreAdapter extends RecyclerView.Adapter<StoreAdapter.ViewHolder> 
    private ImageSlider imageSlider;
    private List<String>images;
    private ImageButton getDirection;
+
+
     StoreAdapter(Context context, List<ModelStore> list)
    {
        mContext=context;
        mlist=list;
        mlistfull=new ArrayList<>(mlist);
    }
+
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -62,9 +76,11 @@ public class StoreAdapter extends RecyclerView.Adapter<StoreAdapter.ViewHolder> 
         TextView store_name;
         TextView store_category;
         TextView store_rating;
+        TextView store_dist;
         store_name=holder.store_name;
         store_category=holder.store_category;
         store_rating=holder.store_rating;
+        store_dist=holder.store_distance;
         Picasso.get()
                 .load(store.getMainImageUrl())
                 .placeholder(R.drawable.ic_baseline_local_grocery_store_24)
@@ -73,6 +89,25 @@ public class StoreAdapter extends RecyclerView.Adapter<StoreAdapter.ViewHolder> 
         store_category.setText(store.getCategory());
         store_rating.setText(store.getRating());
         store_image.setClipToOutline(true);
+
+        if (ActivityCompat.checkSelfPermission((Activity)mContext, ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            FusedLocationProviderClient client=LocationServices.getFusedLocationProviderClient(mContext);
+            client.getLastLocation().addOnSuccessListener(new OnSuccessListener<Location>() {
+                @Override
+                public void onSuccess(Location location) {
+                    if (location != null) {
+                        Location storeLoc=new Location("");
+                        storeLoc.setLatitude(store.getLocation().getLatitude());
+                        storeLoc.setLongitude(store.getLocation().getLongitude());
+                        double distance = location.distanceTo(storeLoc);
+                        distance/=1000;
+                        double roundDistance=round(distance,2);
+                        store_dist.setText(Double.toString(roundDistance)+"km");
+
+                    }
+                }
+            });
+        }
 
 
         holder.store_image.setOnClickListener(new View.OnClickListener()
@@ -115,6 +150,8 @@ public class StoreAdapter extends RecyclerView.Adapter<StoreAdapter.ViewHolder> 
 
             }
         });
+
+
     }
 
     @Override
@@ -124,13 +161,14 @@ public class StoreAdapter extends RecyclerView.Adapter<StoreAdapter.ViewHolder> 
 
     public class ViewHolder extends RecyclerView.ViewHolder  {
         ImageView store_image;
-        TextView store_name,store_category,store_rating;
+        TextView store_name,store_category,store_rating,store_distance;
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             store_image=itemView.findViewById(R.id.item_image);
             store_name=itemView.findViewById(R.id.item_name);
             store_category=itemView.findViewById(R.id.item_category);
-            store_rating=itemView.findViewById(R.id.item_rating);//
+            store_rating=itemView.findViewById(R.id.item_rating);
+            store_distance=itemView.findViewById(R.id.item_dist);
         }
     }
 
@@ -175,4 +213,12 @@ public class StoreAdapter extends RecyclerView.Adapter<StoreAdapter.ViewHolder> 
             notifyDataSetChanged();
         }
     };
+
+    public static double round(double value, int places) {
+        if (places < 0) throw new IllegalArgumentException();
+
+        BigDecimal bd = BigDecimal.valueOf(value);
+        bd = bd.setScale(places, RoundingMode.HALF_UP);
+        return bd.doubleValue();
+    }
 }
