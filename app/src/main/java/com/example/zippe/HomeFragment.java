@@ -2,6 +2,8 @@ package com.example.zippe;
 
 import android.app.Activity;
 import android.content.pm.PackageManager;
+import android.location.Address;
+import android.location.Geocoder;
 import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -41,8 +43,10 @@ import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.GeoPoint;
 import com.google.firebase.firestore.QuerySnapshot;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import Models.ModelStore;
 
@@ -286,11 +290,19 @@ public class HomeFragment extends Fragment {
             public void onSuccess(Location location) {
                 if(location!= null)
                 {
-                    Location dmart=new Location("");
-                    dmart.setLatitude(18.566758);
-                    dmart.setLongitude(73.807233);
-                    double distance = location.distanceTo(dmart);
-                    Log.d("location", "onSuccess: Distance is "+distance);
+//
+//                    Location dmart=new Location("");
+//                    dmart.setLatitude(18.566758);
+//                    dmart.setLongitude(73.807233);
+//                    double distance = location.distanceTo(dmart);
+                    Geocoder geocoder = new Geocoder(getContext(), Locale.getDefault());
+                    try {
+                        List<Address> addresses = geocoder.getFromLocation(location.getLatitude(), location.getLongitude(), 1);
+
+                        Log.d("location", "onSuccess: PinCode is "+addresses.get(0).getPostalCode());
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
                 }
             }
         });
