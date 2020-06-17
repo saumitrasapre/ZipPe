@@ -65,6 +65,7 @@ public class HomeFragment extends Fragment {
     private CollectionReference storedb = db.collection("Stores");
     private SwipeRefreshLayout swipeRefreshLayout;
     private FusedLocationProviderClient client;
+    private String clientPostalCode;
 
     @Nullable
     @Override
@@ -80,80 +81,20 @@ public class HomeFragment extends Fragment {
 
         client = LocationServices.getFusedLocationProviderClient(getContext());
 
-        requestPermission();
-        getMylocation();
+
+        getLocationAndSort();
 
         mProgressCircle = view.findViewById(R.id.progress_circle);
         setHasOptionsMenu(true);
 
         mStores = new ArrayList<ModelStore>();
 
-        storedb.addSnapshotListener(new EventListener<QuerySnapshot>() {
-            @Override
-            public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
-                if (e != null) {
-                    Toast.makeText(getContext(), "Error fetching data", Toast.LENGTH_SHORT).show();
-                    Log.d("datafetch", "onEvent: Error fetching data " + e.toString());
-                    mProgressCircle.setVisibility(View.GONE);
-                } else {
-                    if (queryDocumentSnapshots.isEmpty()) {
-                        Log.d("fetchstores", "onSuccess:Store List Empty ");
-                        mProgressCircle.setVisibility(View.GONE);
-                        return;
-                    } else {
-                        List<ModelStore> temp = queryDocumentSnapshots.toObjects(ModelStore.class);
-                        mStores.addAll(temp);
-                        mStoreslistfull = new ArrayList<>(mStores);
-                        // System.out.println(mStores.get(0).getName());
-                        Log.d("fetchstores", "onSuccess: Store List Fetched ");
-                        mAdapter = new StoreAdapter(getContext(), mStores);
-                        //adapter.update(mStores)
-                        mAdapter.notifyDataSetChanged();
-                        recyclerView.setAdapter(mAdapter);
-                        mProgressCircle.setVisibility(View.GONE);
-
-
-                    }
-                }
-            }
-        });
 
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
 
-                storedb.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
-                    @Override
-                    public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-                        if (queryDocumentSnapshots.isEmpty()) {
-                            Log.d("fetchstores", "onSuccess:Store List Empty ");
-                            mProgressCircle.setVisibility(View.GONE);
-                            swipeRefreshLayout.setRefreshing(false);
-                            return;
-                        } else {
-                            List<ModelStore> temp = queryDocumentSnapshots.toObjects(ModelStore.class);
-                            mStores.addAll(temp);
-                            mStoreslistfull = new ArrayList<>(mStores);
-                            // System.out.println(mStores.get(0).getName());
-                            Log.d("fetchstores", "onSuccess: Store List Fetched ");
-                            mAdapter = new StoreAdapter(getContext(), mStores);
-                            //adapter.update(mStores)
-                            mAdapter.notifyDataSetChanged();
-                            recyclerView.setAdapter(mAdapter);
-                            mProgressCircle.setVisibility(View.GONE);
-                            swipeRefreshLayout.setRefreshing(false);
-
-                        }
-                    }
-                }).addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Toast.makeText(getContext(), "Error fetching data", Toast.LENGTH_SHORT).show();
-                        mProgressCircle.setVisibility(View.GONE);
-                        swipeRefreshLayout.setRefreshing(false);
-                    }
-                });
-
+                refreshList();
 
             }
         });
@@ -246,7 +187,13 @@ public class HomeFragment extends Fragment {
                             mAdapter.notifyDataSetChanged();
 
                         } else if (checkedId == -1) {
-                            noItems.setVisibility(View.GONE);
+                            getActivity().runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    noItems.setVisibility(View.GONE);
+                                }
+                            });
+                            //noItems.setVisibility(View.GONE);
                             mStores.addAll(mStoreslistfull);
                             mAdapter.notifyDataSetChanged();
                             System.out.println("No chip checked");
@@ -273,24 +220,13 @@ public class HomeFragment extends Fragment {
 
     }
 
-    private void getMylocation() {
-
-        if (ActivityCompat.checkSelfPermission(getContext(), ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
-            return;
-        }
+    private void getLocationAndSort() {
+        requestPermission();
+        if (ActivityCompat.checkSelfPermission(getContext(), ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
         client.getLastLocation().addOnSuccessListener((Activity) getContext(), new OnSuccessListener<Location>() {
             @Override
             public void onSuccess(Location location) {
-                if(location!= null)
-                {
-//
+                if (location != null) {
 //                    Location dmart=new Location("");
 //                    dmart.setLatitude(18.566758);
 //                    dmart.setLongitude(73.807233);
@@ -298,19 +234,121 @@ public class HomeFragment extends Fragment {
                     Geocoder geocoder = new Geocoder(getContext(), Locale.getDefault());
                     try {
                         List<Address> addresses = geocoder.getFromLocation(location.getLatitude(), location.getLongitude(), 1);
+                        Log.d("location", "onSuccess: " + addresses.get(0).getSubLocality());
+                        //  Log.d("location", "onSuccess: "+addresses.get(1).getSubLocality());
+                        Log.d("location", "onSuccess: PinCode1 is " + addresses.get(0).getPostalCode());
+                        //Log.d("location", "onSuccess: PinCode2 is "+addresses.get(1).getPostalCode());
+                        clientPostalCode = addresses.get(0).getPostalCode();
+                        mStores.clear();
 
-                        Log.d("location", "onSuccess: PinCode is "+addresses.get(0).getPostalCode());
+                        storedb.whereEqualTo("postalCode", clientPostalCode)
+                                .addSnapshotListener(new EventListener<QuerySnapshot>() {
+                                    @Override
+                                    public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
+                                        if (e != null) {
+                                            Toast.makeText(getContext(), "Error fetching data", Toast.LENGTH_SHORT).show();
+                                            Log.d("datafetch", "onEvent: Error fetching data " + e.toString());
+                                            mProgressCircle.setVisibility(View.GONE);
+                                        } else {
+                                            if (queryDocumentSnapshots.isEmpty()) {
+                                                Log.d("fetchstores", "onSuccess:Store List Empty ");
+                                                mProgressCircle.setVisibility(View.GONE);
+                                                return;
+                                            } else {
+                                                List<ModelStore> temp = queryDocumentSnapshots.toObjects(ModelStore.class);
+                                                mStores.addAll(temp);
+                                                mStoreslistfull = new ArrayList<>(mStores);
+                                                // System.out.println(mStores.get(0).getName());
+                                                Log.d("fetchstores", "onSuccess: Store List Fetched ");
+                                                mAdapter = new StoreAdapter(getContext(), mStores);
+                                                //adapter.update(mStores)
+                                                mAdapter.notifyDataSetChanged();
+                                                recyclerView.setAdapter(mAdapter);
+                                                mProgressCircle.setVisibility(View.GONE);
+
+
+                                            }
+                                        }
+                                    }
+                                });
+
+
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
+                } else if (location.equals(null)) {
+                    Toast.makeText(getContext(), "Turn on GPS to view nearby stores", Toast.LENGTH_SHORT).show();
                 }
             }
         });
+    }
     }
 
     private void requestPermission()
     {
         ActivityCompat.requestPermissions(getActivity(),new String[]{ACCESS_FINE_LOCATION},1);
+    }
+
+    private void refreshList() {
+        requestPermission();
+        if (ActivityCompat.checkSelfPermission(getContext(), ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            client.getLastLocation().addOnSuccessListener((Activity) getContext(), new OnSuccessListener<Location>() {
+                @Override
+                public void onSuccess(Location location) {
+                    if (location != null) {
+                        Geocoder geocoder = new Geocoder(getContext(), Locale.getDefault());
+                        try {
+                            List<Address> addresses = geocoder.getFromLocation(location.getLatitude(), location.getLongitude(), 1);
+                            Log.d("location", "onSuccess: " + addresses.get(0).getSubLocality());
+                            Log.d("location", "onSuccess: PinCode1 is " + addresses.get(0).getPostalCode());
+                            clientPostalCode = addresses.get(0).getPostalCode();
+
+                            mStores.clear();
+                            mStoreslistfull.clear();
+                            storedb .whereEqualTo("postalCode", clientPostalCode)
+                                    .get()
+                                    .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                                @Override
+                                public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                                    if (queryDocumentSnapshots.isEmpty()) {
+                                        Log.d("fetchstores", "onSuccess:Store List Empty ");
+                                        mProgressCircle.setVisibility(View.GONE);
+                                        swipeRefreshLayout.setRefreshing(false);
+                                        return;
+                                    } else {
+                                        List<ModelStore> temp = queryDocumentSnapshots.toObjects(ModelStore.class);
+                                        mStores.addAll(temp);
+                                        mStoreslistfull = new ArrayList<>(mStores);
+                                        Log.d("fetchstores", "onSuccess: Store List Fetched ");
+                                        mAdapter = new StoreAdapter(getContext(), mStores);
+                                        mAdapter.notifyDataSetChanged();
+                                        recyclerView.setAdapter(mAdapter);
+                                        mProgressCircle.setVisibility(View.GONE);
+                                        swipeRefreshLayout.setRefreshing(false);
+
+                                    }
+                                }
+                            }).addOnFailureListener(new OnFailureListener() {
+                                @Override
+                                public void onFailure(@NonNull Exception e) {
+                                    Toast.makeText(getContext(), "Error fetching data", Toast.LENGTH_SHORT).show();
+                                    mProgressCircle.setVisibility(View.GONE);
+                                    swipeRefreshLayout.setRefreshing(false);
+                                }
+                            });
+
+
+
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    } else if (location.equals(null)) {
+                        Toast.makeText(getContext(), "Turn on GPS to view nearby stores", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+                }
+            });
+        }
     }
 
     @Override

@@ -12,25 +12,38 @@ public class ModelStore {
     private List<String> otherImages;
     private String address;
     private GeoPoint location;
+    private String postalCode;
 
     public ModelStore() {
     }
 
-    public ModelStore(String mainImageUrl, String name, String rating, String category, List<String> otherImages, String address) {
+    public ModelStore(String mainImageUrl, String name, String rating, String category, List<String> otherImages, String address, GeoPoint location, String postalCode) {
         this.mainImageUrl = mainImageUrl;
         this.name = name;
         this.rating = rating;
         this.category = category;
         this.otherImages = otherImages;
         this.address = address;
+        this.location = location;
+        this.postalCode = postalCode;
     }
 
-    public ModelStore(String mainImageUrl, String name, String rating, String category, String address) {
+    public ModelStore(String mainImageUrl, String name, String rating, String category, String address, GeoPoint location, String postalCode) {
         this.mainImageUrl = mainImageUrl;
         this.name = name;
         this.rating = rating;
         this.category = category;
         this.address = address;
+        this.location = location;
+        this.postalCode = postalCode;
+    }
+
+    public String getPostalCode() {
+        return postalCode;
+    }
+
+    public void setPostalCode(String postalCode) {
+        this.postalCode = postalCode;
     }
 
     public String getAddress() {

@@ -90,15 +90,16 @@ public class StoreAdapter extends RecyclerView.Adapter<StoreAdapter.ViewHolder> 
                 {
                     slideModels.add(new SlideModel(item));
                 }
-                GeoPoint storeLoc=store.getLocation();
+                //GeoPoint storeLoc=store.getLocation();
                 imageSlider.setImageList(slideModels,true);
                 getDirection=bottomSheetView.findViewById(R.id.get_direction);
                 getDirection.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         //String geoUri = "http://maps.google.com/maps?q=loc:" + storeLoc.getLatitude() + "," + storeLoc.getLongitude() + " (" + "Dmart" + ")";
-                        String geoUri = "https://maps.app.goo.gl/UYC3igVovFPEtLyv6";
-                        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(geoUri));
+                        //String geoUri = "https://maps.app.goo.gl/UYC3igVovFPEtLyv6";
+                        Uri mapUri = Uri.parse("geo:0,0?q=" + Uri.encode(store.getAddress()));
+                        Intent intent = new Intent(Intent.ACTION_VIEW,mapUri);
                         bottomSheetDialog.getContext().startActivity(intent);
 
                     }
@@ -130,20 +131,6 @@ public class StoreAdapter extends RecyclerView.Adapter<StoreAdapter.ViewHolder> 
             store_name=itemView.findViewById(R.id.item_name);
             store_category=itemView.findViewById(R.id.item_category);
             store_rating=itemView.findViewById(R.id.item_rating);//
-//            itemView.setOnClickListener(new View.OnClickListener()
-//            {
-//                @Override
-//                public void onClick(View v) {
-//
-//
-//                    final BottomSheetDialog bottomSheetDialog=new BottomSheetDialog(itemView.getContext(),R.style.BottomSheetDialogTheme);
-//                    View bottomSheetView = LayoutInflater.from(itemView.getContext()).inflate(R.layout.layout_bottom_sheet,(LinearLayout)v.findViewById(R.id.bottomSheetContainer));
-//                    bottomSheetDialog.setContentView(bottomSheetView);
-//                    bottomSheetDialog.show();
-//
-//
-//                }
-//            });
         }
     }
 
@@ -183,7 +170,6 @@ public class StoreAdapter extends RecyclerView.Adapter<StoreAdapter.ViewHolder> 
 
         @Override
         protected void publishResults(CharSequence constraint, FilterResults results) {
-
             mlist.clear();
             mlist.addAll((List)results.values);
             notifyDataSetChanged();
