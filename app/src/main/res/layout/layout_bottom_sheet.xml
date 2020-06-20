@@ -13,6 +13,7 @@
         android:layout_height="200dp"
         app:auto_cycle="false"
         app:placeholder="@color/lightgrey"
+        android:src="@drawable/bottom_sheet_background"
         app:period="1000"
         app:delay="0"/>
 
