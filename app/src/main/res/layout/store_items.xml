@@ -25,8 +25,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="bottom|end"
-            android:paddingRight="20dp"
+            android:layout_marginEnd="10dp"
             android:text="Category"
+            android:layout_marginBottom="10dp"
             android:textColor="@android:color/white"
             android:textSize="14sp"
             android:textStyle="bold" />
@@ -37,6 +38,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="right"
             android:layout_marginEnd="10dp"
+            android:layout_marginTop="10dp"
             android:layout_weight="2"
             android:background="@drawable/capsule"
             android:gravity="center"
@@ -48,7 +50,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="bottom"
             android:orientation="vertical"
-            android:paddingLeft="20dp">
+            android:paddingLeft="10dp">
 
             <TextView
                 android:id="@+id/item_name"

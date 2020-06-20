@@ -9,6 +9,7 @@ import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.Filter;
 import android.widget.Filterable;
 import android.widget.FrameLayout;
@@ -16,6 +17,7 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
@@ -50,7 +52,7 @@ public class StoreAdapter extends RecyclerView.Adapter<StoreAdapter.ViewHolder> 
    private ImageSlider imageSlider;
    private List<String>images;
    private ImageButton getDirection;
-
+   private Button visit;
 
     StoreAdapter(Context context, List<ModelStore> list)
    {
@@ -146,6 +148,44 @@ public class StoreAdapter extends RecyclerView.Adapter<StoreAdapter.ViewHolder> 
                 TextView bottomAddress=bottomSheetView.findViewById(R.id.bottom_address);
                 bottomAddress.setText(store.getAddress());
                 bottomSheetDialog.show();
+
+                visit=bottomSheetView.findViewById(R.id.visit);
+
+                visit.setOnClickListener(new View.OnClickListener(){
+
+                    @Override
+                    public void onClick(View v) {
+
+                        if (ActivityCompat.checkSelfPermission((Activity)mContext, ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                            FusedLocationProviderClient client=LocationServices.getFusedLocationProviderClient(mContext);
+                            client.getLastLocation().addOnSuccessListener(new OnSuccessListener<Location>() {
+                                @Override
+                                public void onSuccess(Location location) {
+                                    if (location != null) {
+                                        Location storeLoc=new Location("");
+                                        float[] results = new float[1];
+                                        Location.distanceBetween(storeLoc.getLatitude(),storeLoc.getLongitude(),store.getLocation().getLatitude(),store.getLocation().getLongitude(),results
+                                        );
+
+                                        if(results[0]<100)
+                                        {
+                                            Intent intent=new Intent(bottomSheetView.getContext(),barcode.class);
+                                            bottomSheetView.getContext().startActivity(intent);
+
+                                        }
+                                        else
+                                        {
+                                            Toast.makeText(bottomSheetView.getContext(),"AWAY FROM SHOP...PLEASE VISIT SHOP",Toast.LENGTH_SHORT).show();
+                                        }
+
+                                    }
+                                }
+                            });
+                        }
+
+
+                    }
+                });
 
 
             }
