@@ -273,6 +273,7 @@ public class HomeFragment extends Fragment {
                         e.printStackTrace();
                     }
                 } else if (location.equals(null)) {
+                    mProgressCircle.setVisibility(View.GONE);
                     Toast.makeText(getContext(), "Turn on GPS to view nearby stores", Toast.LENGTH_SHORT).show();
                 }
             }
@@ -300,7 +301,7 @@ public class HomeFragment extends Fragment {
                             clientPostalCode = addresses.get(0).getPostalCode();
 
                             mStores.clear();
-                            mStoreslistfull.clear();
+                            //mStoreslistfull.clear();
                             storedb .whereEqualTo("postalCode", clientPostalCode)
                                     .get()
                                     .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
@@ -339,6 +340,7 @@ public class HomeFragment extends Fragment {
                             e.printStackTrace();
                         }
                     } else if (location.equals(null)) {
+                        mProgressCircle.setVisibility(View.GONE);
                         Toast.makeText(getContext(), "Turn on GPS to view nearby stores", Toast.LENGTH_SHORT).show();
                         return;
                     }

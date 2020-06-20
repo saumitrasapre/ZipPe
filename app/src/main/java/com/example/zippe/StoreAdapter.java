@@ -175,7 +175,7 @@ public class StoreAdapter extends RecyclerView.Adapter<StoreAdapter.ViewHolder> 
                                         }
                                         else
                                         {
-                                            Toast.makeText(bottomSheetView.getContext(),"AWAY FROM SHOP...PLEASE VISIT SHOP",Toast.LENGTH_SHORT).show();
+                                            Toast.makeText(bottomSheetView.getContext(),"Away from store... Please get in the vicinity of the store",Toast.LENGTH_SHORT).show();
                                         }
 
                                     }
