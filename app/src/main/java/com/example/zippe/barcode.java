@@ -1,7 +1,9 @@
 package com.example.zippe;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -47,6 +49,7 @@ public class barcode extends AppCompatActivity {
         recycler_cart = (RecyclerView) findViewById(R.id.recycler_cart);
         recycler_cart.setLayoutManager(new LinearLayoutManager(this));
         scan_new = (FloatingActionButton) findViewById(R.id.scan_new);
+        new ItemTouchHelper(itemTouchHelperCallback).attachToRecyclerView(recycler_cart);
 
         loadCartItems();
 
@@ -93,4 +96,18 @@ public class barcode extends AppCompatActivity {
 
 
     }
+
+    ItemTouchHelper.SimpleCallback itemTouchHelperCallback=new ItemTouchHelper.SimpleCallback(0,ItemTouchHelper.RIGHT|ItemTouchHelper.LEFT) {
+        @Override
+        public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
+            return false;
+        }
+
+        @Override
+        public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
+            cart.document(mCart.get(viewHolder.getAdapterPosition()).getProductCode()).delete();
+            mCart.remove(viewHolder.getAdapterPosition());
+            mCartAdapter.notifyDataSetChanged();
+        }
+    };
 }
