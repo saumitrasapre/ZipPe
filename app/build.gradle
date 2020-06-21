@@ -50,5 +50,8 @@ dependencies {
     implementation 'com.makeramen:roundedimageview:2.3.0'
     implementation 'com.github.denzcoskun:ImageSlideshow:0.0.6'
     implementation 'com.google.android.gms:play-services-location:17.0.0'
+    implementation 'com.cepheuen.elegant-number-button:lib:1.0.2'
+    implementation 'me.dm7.barcodescanner:zxing:1.9'
+
 
 }
