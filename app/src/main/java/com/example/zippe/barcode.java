@@ -61,6 +61,7 @@ public class barcode extends AppCompatActivity {
 
     }
 
+
     private void loadCartItems() {
 
 

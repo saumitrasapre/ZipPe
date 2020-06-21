@@ -11,9 +11,21 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.cepheuen.elegantnumberbutton.view.ElegantNumberButton;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.firestore.SetOptions;
 import com.squareup.picasso.Picasso;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import Models.ModelCart;
 
@@ -21,6 +33,8 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.CartViewHolder
 
     Context context;
     List<ModelCart> cartList;
+    private FirebaseFirestore db = FirebaseFirestore.getInstance();
+    private CollectionReference cart = db.collection("Users").document(FirebaseAuth.getInstance().getCurrentUser().getUid()).collection("Cart");
 
     public CartAdapter(Context context, List<ModelCart> cartList) {
         this.context = context;
@@ -53,6 +67,17 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.CartViewHolder
             public void onValueChange(ElegantNumberButton view, int oldValue, int newValue) {
                 cartList.get(position).setProductQuantity(newValue);
                 notifyDataSetChanged();
+                cart.whereEqualTo("productCode", cartList.get(position).getProductCode()).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        for (QueryDocumentSnapshot document : task.getResult()) {
+                            Map<Object, Integer> map = new HashMap<>();
+                            map.put("productQuantity", newValue);
+                            cart.document(document.getId()).set(map, SetOptions.merge());
+                        }
+
+                    }
+                });
             }
         });
     }
