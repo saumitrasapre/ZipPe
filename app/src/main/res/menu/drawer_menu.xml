@@ -11,6 +11,11 @@
             android:id="@+id/viewprofile"
             android:icon="@drawable/ic_baseline_account_circle_24"
             android:title="Profile" />
+
+        <item
+            android:id="@+id/viewcart"
+            android:icon="@drawable/ic_baseline_local_grocery_store_24"
+            android:title="Cart" />
     </group>
 
     <item android:title="Actions">

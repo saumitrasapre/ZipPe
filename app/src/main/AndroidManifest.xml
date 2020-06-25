@@ -13,8 +13,11 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".ScanCode"></activity>
-        <activity android:name=".barcode" />
+        <activity android:name=".Checkout"
+            android:parentActivityName=".barcode"></activity>
+        <activity android:name=".ScanCode" />
+        <activity android:name=".barcode"
+            android:parentActivityName=".LandingScreen"/>
 
         <meta-data
             android:name="com.facebook.sdk.ApplicationId"

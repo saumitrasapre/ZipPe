@@ -3,26 +3,31 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    app:cardElevation="8dp">
+    android:layout_margin="8dp"
+    app:cardElevation="5dp"
+    app:cardCornerRadius="10dp"
+    android:id="@+id/cart_item">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="8dp"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:padding="8dp">
 
-        <ImageView
+        <de.hdodenhof.circleimageview.CircleImageView
             android:id="@+id/img_product"
+            app:civ_border_color="@color/greencolor"
+            app:civ_border_width="2dp"
             android:layout_width="80dp"
             android:layout_height="80dp"
-            android:layout_margin="5dp"/>
+            android:layout_margin="5dp" />
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="5dp"
-            android:padding="5dp"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:padding="5dp">
 
             <TextView
                 android:id="@+id/name_product"
@@ -33,17 +38,16 @@
                 android:textStyle="bold" />
 
             <TextView
-                android:id="@+id/code_product"
+                android:id="@+id/weight_product"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Product Code"
+                android:text="Product Weight"
                 android:textSize="18sp" />
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:weightSum="7"
-                >
+                android:weightSum="7">
 
                 <TextView
                     android:id="@+id/price_product"
@@ -58,12 +62,11 @@
                     android:layout_width="80dp"
                     android:layout_height="35dp"
                     android:layout_weight="1"
-                    app:initialNumber="1"
-                    app:finalNumber="100"
                     app:backGroundColor="@color/whitecolor"
-                    app:textSize="10sp"
+                    app:finalNumber="100"
+                    app:initialNumber="1"
                     app:textColor="@color/greencolor"
-                    >
+                    app:textSize="10sp">
 
                 </com.cepheuen.elegantnumberbutton.view.ElegantNumberButton>
 

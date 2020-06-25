@@ -1,4 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
+<androidx.swiperefreshlayout.widget.SwipeRefreshLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/swipeRefreshCart"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:theme="@style/AppTheme">
+
 
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -7,9 +13,13 @@
     android:layout_height="match_parent"
     tools:context=".barcode">
 
+    <include
+        android:id="@+id/appBar"
+        layout="@layout/cartappbar"/>
 
 
     <androidx.recyclerview.widget.RecyclerView
+        android:layout_below="@+id/appBar"
         android:id="@+id/recycler_cart"
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
@@ -24,3 +34,5 @@
         android:src="@drawable/ic_barcode_scan"/>
 
 </RelativeLayout>
+
+</androidx.swiperefreshlayout.widget.SwipeRefreshLayout>

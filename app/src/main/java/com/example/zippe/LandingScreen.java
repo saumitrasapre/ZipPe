@@ -70,6 +70,12 @@ public class LandingScreen extends AppCompatActivity implements NavigationView.O
                         new HomeFragment()).commit();
                 break;
 
+            case R.id.viewcart:
+               Intent myintent=new Intent(getApplicationContext(),barcode.class);
+               startActivity(myintent);
+               item.setChecked(false);
+                break;
+
             case R.id.logout:
                 pd.show();
                 FirebaseAuth.getInstance().signOut();

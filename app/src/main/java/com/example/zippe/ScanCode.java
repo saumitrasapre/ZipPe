@@ -24,6 +24,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
@@ -60,23 +61,8 @@ public class ScanCode extends AppCompatActivity implements ZXingScannerView.Resu
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         setContentView(R.layout.activity_scan_code);
         mScannerView =  (ZXingScannerView)findViewById(R.id.zxscan);
-        //setContentView(mScannerView);
-
-//        buttonadd.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                Log.d("TAG","CLICKED");
-////                mScannerView.stopCamera();
-////                onBackPressed();
-//
-//            }
-//        });
-
-
-
         pd = new ProgressDialog(this);
         pd.setMessage("Loading...");
         pd.setCancelable(true);
@@ -90,8 +76,7 @@ public class ScanCode extends AppCompatActivity implements ZXingScannerView.Resu
         System.out.println("Scanning result is " + store_id);
         final BottomSheetDialog bottomSheetDialog=new BottomSheetDialog(mScannerView.getContext(), R.style.BottomSheetDialogTheme);
         View bottomSheetView = LayoutInflater.from(getApplicationContext()).inflate(R.layout.bottom_sheet_layout_2, (LinearLayout)findViewById(R.id.bottomSheetContainer));
-
-
+        bottomSheetDialog.setCancelable(false);
         System.out.println(result.getText());
         pd.show();
         CollectionReference product = db.collection("Stores").document(store_id).collection("Items");
@@ -106,16 +91,10 @@ public class ScanCode extends AppCompatActivity implements ZXingScannerView.Resu
                         } else {
                             if (queryDocumentSnapshots.isEmpty()) {
                                 Log.d("fetchstores", "onSuccess: List Empty ");
+                                Toast.makeText(ScanCode.this, "Invalid Barcode", Toast.LENGTH_SHORT).show();
                                 pd.dismiss();
-                                try {
-                                    Thread.sleep(5000);
-                                } catch (InterruptedException ex) {
-                                    ex.printStackTrace();
-                                }
                                 mScannerView.stopCamera();
                                 onBackPressed();
-
-
                                 return;
                             } else {
                                 itemList = queryDocumentSnapshots.getDocuments();
@@ -131,98 +110,123 @@ public class ScanCode extends AppCompatActivity implements ZXingScannerView.Resu
                                                 Log.d("ItemExistence", "Document exists!");
                                                 Map<Object, Long> map = new HashMap<>();
                                                 map.put("productQuantity", (Long) document.get("productQuantity")+1);
-                                                cart.document(document.getId()).set(map, SetOptions.merge());
+
                                                 TextView productname=bottomSheetView.findViewById(R.id.productname);
                                                 productname.setText(cartItem.getProductName());
                                                 ImageView productimage=bottomSheetView.findViewById(R.id.product_image);
                                                 Picasso.get()
                                                         .load(cartItem.getProductImage())
-                                                        .placeholder(R.drawable.ic_baseline_local_grocery_store_24)
+                                                        .placeholder(R.color.lightgrey)
                                                         .into(productimage);
+                                                TextView productWeight=bottomSheetView.findViewById(R.id.weight);
+                                                productWeight.setText(cartItem.getProductWeight());
                                                 TextView price=bottomSheetView.findViewById(R.id.price);
-                                                price.setText("Rs "+cartItem.getProductPrice()+" /-");
+                                                price.setText("₹ "+cartItem.getProductPrice()+" /-");
+                                                pd.dismiss();
+                                                bottomSheetDialog.setContentView(bottomSheetView);
+                                                bottomSheetDialog.show();
                                                 bottomSheetView.findViewById(R.id.bottom_add).setOnClickListener(new View.OnClickListener() {
                                                     @Override
                                                     public void onClick(View v) {
                                                         Log.d("TAG","CLICKED");
-                                                        mScannerView.stopCamera();
-                                                        bottomSheetDialog.dismiss();
-                                                        onBackPressed();
-
-                                                    }
-                                                });
-                                                //prodcutname.setText(cartItem.getProductName());
-                                                Log.d("TAG", "mihir");
-                                                pd.dismiss();
-                                                bottomSheetDialog.setContentView(bottomSheetView);
-                                                bottomSheetDialog.show();
-
-
-                                            } else {
-                                                Log.d("ItemExistence", "Document does not exist!");
-                                                cart.document(result.getText()).set(cartItem, SetOptions.merge()).addOnSuccessListener(new OnSuccessListener<Void>() {
-                                                    @Override
-                                                    public void onSuccess(Void aVoid) {
-                                                        Log.d("Cart Item added", "onSuccess: Cart item added");
-                                                        pd.dismiss();
-                                                        TextView productname=bottomSheetView.findViewById(R.id.productname);
-                                                        productname.setText(cartItem.getProductName());
-                                                        ImageView productimage=bottomSheetView.findViewById(R.id.product_image);
-                                                        Picasso.get()
-                                                                .load(cartItem.getProductImage())
-                                                                .placeholder(R.drawable.ic_baseline_local_grocery_store_24)
-                                                                .into(productimage);
-                                                        TextView price=bottomSheetView.findViewById(R.id.price);
-                                                        price.setText("Rs "+cartItem.getProductPrice()+" /-");
-                                                        bottomSheetView.findViewById(R.id.bottom_add).setOnClickListener(new View.OnClickListener() {
+                                                        pd.show();
+                                                        cart.document(document.getId()).set(map, SetOptions.merge()).addOnSuccessListener(new OnSuccessListener<Void>() {
                                                             @Override
-                                                            public void onClick(View v) {
-                                                                Log.d("TAG","CLICKED");
+                                                            public void onSuccess(Void aVoid) {
+                                                                Log.d("Cart Item added", "onSuccess: Cart item added");
+                                                                pd.dismiss();
                                                                 mScannerView.stopCamera();
                                                                 bottomSheetDialog.dismiss();
                                                                 onBackPressed();
-
+                                                            }
+                                                        }).addOnFailureListener(new OnFailureListener() {
+                                                            @Override
+                                                            public void onFailure(@NonNull Exception e) {
+                                                                Log.d("Cart Item added", "onFailure:Failed to add cart item " + e.toString());
+                                                                Toast.makeText(ScanCode.this, "Failed to add cart item", Toast.LENGTH_SHORT).show();
+                                                                pd.dismiss();
+                                                                mScannerView.stopCamera();
+                                                                bottomSheetDialog.dismiss();
+                                                                onBackPressed();
                                                             }
                                                         });
-                                                        //prodcutname.setText(cartItem.getProductName());
-                                                        Log.d("TAG", "mihir");
-                                                        pd.dismiss();
-                                                        bottomSheetDialog.setContentView(bottomSheetView);
-                                                        bottomSheetDialog.show();
-
-
                                                     }
-                                                }).addOnFailureListener(new OnFailureListener() {
+                                                });
+                                                bottomSheetView.findViewById(R.id.close_bottom_sheet).setOnClickListener(new View.OnClickListener() {
                                                     @Override
-                                                    public void onFailure(@NonNull Exception e) {
-                                                        Log.d("Cart Item added", "onFailure:Failed to add cart item " + e.toString());
-                                                        Toast.makeText(ScanCode.this, "Failed to add cart item", Toast.LENGTH_SHORT).show();
-                                                        pd.dismiss();
-                                                        try {
-                                                            Thread.sleep(5000);
-                                                        } catch (InterruptedException ex) {
-                                                            ex.printStackTrace();
-                                                        }
+                                                    public void onClick(View v) {
                                                         mScannerView.stopCamera();
+                                                        bottomSheetDialog.dismiss();
+                                                        pd.dismiss();
                                                         onBackPressed();
+                                                    }
+                                                });
 
+                                            } else {
+                                                Log.d("ItemExistence", "Document does not exist!");
+                                                TextView productname=bottomSheetView.findViewById(R.id.productname);
+                                                productname.setText(cartItem.getProductName());
+                                                ImageView productimage=bottomSheetView.findViewById(R.id.product_image);
+                                                Picasso.get()
+                                                        .load(cartItem.getProductImage())
+                                                        .placeholder(R.color.lightgrey)
+                                                        .into(productimage);
+
+                                                TextView price=bottomSheetView.findViewById(R.id.price);
+                                                price.setText("₹ "+cartItem.getProductPrice()+" /-");
+                                                TextView productWeight=bottomSheetView.findViewById(R.id.weight);
+                                                productWeight.setText(cartItem.getProductWeight());
+                                                pd.dismiss();
+                                                bottomSheetDialog.setContentView(bottomSheetView);
+                                                bottomSheetDialog.show();
+                                                bottomSheetView.findViewById(R.id.bottom_add).setOnClickListener(new View.OnClickListener() {
+                                                    @Override
+                                                    public void onClick(View v) {
+                                                        Log.d("TAG","CLICKED");
+                                                        pd.show();
+                                                        cart.document(result.getText()).set(cartItem, SetOptions.merge()).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                            @Override
+                                                            public void onSuccess(Void aVoid) {
+                                                                Log.d("Cart Item added", "onSuccess: Cart item added");
+                                                                pd.dismiss();
+                                                                mScannerView.stopCamera();
+                                                                bottomSheetDialog.dismiss();
+                                                                onBackPressed();
+                                                            }
+                                                        }).addOnFailureListener(new OnFailureListener() {
+                                                            @Override
+                                                            public void onFailure(@NonNull Exception e) {
+                                                                Log.d("Cart Item added", "onFailure:Failed to add cart item " + e.toString());
+                                                                Toast.makeText(ScanCode.this, "Failed to add cart item", Toast.LENGTH_SHORT).show();
+                                                                pd.dismiss();
+                                                                mScannerView.stopCamera();
+                                                                bottomSheetDialog.dismiss();
+                                                                onBackPressed();
+                                                            }
+                                                        });
 
                                                     }
                                                 });
+                                                bottomSheetView.findViewById(R.id.close_bottom_sheet).setOnClickListener(new View.OnClickListener() {
+                                                    @Override
+                                                    public void onClick(View v) {
+                                                        mScannerView.stopCamera();
+                                                        bottomSheetDialog.dismiss();
+                                                        onBackPressed();
+                                                    }
+                                                });
+
                                             }
                                         } else {
                                             Log.d("ItemExistence", "Failed with: ", task.getException());
                                         }
                                     }
                                 });
-                                /**/
                             }
                         }
                     }
                 });
 
-        //onBackPressed();
-        ///MainActivity.resultTextView.setText(result.getText());
 
     }
 
@@ -231,7 +235,7 @@ public class ScanCode extends AppCompatActivity implements ZXingScannerView.Resu
 
         super.onPause();
        // bottomSheetDialog.dismiss();
-       // ScannerView.stopCamera();
+       mScannerView.stopCamera();
     }
 
     @Override
