@@ -176,7 +176,7 @@ public class StoreAdapter extends RecyclerView.Adapter<StoreAdapter.ViewHolder> 
                                         float[] results = new float[1];
                                         Location.distanceBetween(storeLoc.getLatitude(), storeLoc.getLongitude(), store.getLocation().getLatitude(), store.getLocation().getLongitude(), results);
 
-                                        if (results[0] > 100)//make sign reverse here
+                                        if (results[0] > 11100)//make sign reverse here
                                         {
 
                                             pd.show();

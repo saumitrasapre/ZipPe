@@ -7,11 +7,17 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.media.Image;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -28,7 +34,11 @@ import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.firestore.SetOptions;
 import com.google.zxing.Result;
+import com.squareup.picasso.Picasso;
 
+import org.w3c.dom.Text;
+
+import java.sql.Time;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -41,15 +51,30 @@ public class ScanCode extends AppCompatActivity implements ZXingScannerView.Resu
     private ProgressDialog pd;
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
     private CollectionReference cart = db.collection("Users").document(FirebaseAuth.getInstance().getCurrentUser().getUid()).collection("Cart");
-
     private List<DocumentSnapshot> itemList;
+    ZXingScannerView mScannerView;
+
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        ScannerView = new ZXingScannerView(this);
-        setContentView(ScannerView);
+        setContentView(R.layout.activity_scan_code);
+        mScannerView =  (ZXingScannerView)findViewById(R.id.zxscan);
+        //setContentView(mScannerView);
+
+//        buttonadd.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                Log.d("TAG","CLICKED");
+////                mScannerView.stopCamera();
+////                onBackPressed();
+//
+//            }
+//        });
+
 
 
         pd = new ProgressDialog(this);
@@ -63,6 +88,9 @@ public class ScanCode extends AppCompatActivity implements ZXingScannerView.Resu
         Intent myIntent = getIntent();
         String store_id = myIntent.getStringExtra("Store_id");
         System.out.println("Scanning result is " + store_id);
+        final BottomSheetDialog bottomSheetDialog=new BottomSheetDialog(mScannerView.getContext(), R.style.BottomSheetDialogTheme);
+        View bottomSheetView = LayoutInflater.from(getApplicationContext()).inflate(R.layout.bottom_sheet_layout_2, (LinearLayout)findViewById(R.id.bottomSheetContainer));
+
 
         System.out.println(result.getText());
         pd.show();
@@ -75,12 +103,19 @@ public class ScanCode extends AppCompatActivity implements ZXingScannerView.Resu
                             Toast.makeText(getApplicationContext(), "Error fetching data", Toast.LENGTH_SHORT).show();
                             Log.d("datafetch", "onEvent: Error fetching data " + e.toString());
                             onBackPressed();
-                            pd.dismiss();
                         } else {
                             if (queryDocumentSnapshots.isEmpty()) {
                                 Log.d("fetchstores", "onSuccess: List Empty ");
-                                onBackPressed();
                                 pd.dismiss();
+                                try {
+                                    Thread.sleep(5000);
+                                } catch (InterruptedException ex) {
+                                    ex.printStackTrace();
+                                }
+                                mScannerView.stopCamera();
+                                onBackPressed();
+
+
                                 return;
                             } else {
                                 itemList = queryDocumentSnapshots.getDocuments();
@@ -97,8 +132,31 @@ public class ScanCode extends AppCompatActivity implements ZXingScannerView.Resu
                                                 Map<Object, Long> map = new HashMap<>();
                                                 map.put("productQuantity", (Long) document.get("productQuantity")+1);
                                                 cart.document(document.getId()).set(map, SetOptions.merge());
+                                                TextView productname=bottomSheetView.findViewById(R.id.productname);
+                                                productname.setText(cartItem.getProductName());
+                                                ImageView productimage=bottomSheetView.findViewById(R.id.product_image);
+                                                Picasso.get()
+                                                        .load(cartItem.getProductImage())
+                                                        .placeholder(R.drawable.ic_baseline_local_grocery_store_24)
+                                                        .into(productimage);
+                                                TextView price=bottomSheetView.findViewById(R.id.price);
+                                                price.setText("Rs "+cartItem.getProductPrice()+" /-");
+                                                bottomSheetView.findViewById(R.id.bottom_add).setOnClickListener(new View.OnClickListener() {
+                                                    @Override
+                                                    public void onClick(View v) {
+                                                        Log.d("TAG","CLICKED");
+                                                        mScannerView.stopCamera();
+                                                        bottomSheetDialog.dismiss();
+                                                        onBackPressed();
+
+                                                    }
+                                                });
+                                                //prodcutname.setText(cartItem.getProductName());
+                                                Log.d("TAG", "mihir");
                                                 pd.dismiss();
-                                                onBackPressed();
+                                                bottomSheetDialog.setContentView(bottomSheetView);
+                                                bottomSheetDialog.show();
+
 
                                             } else {
                                                 Log.d("ItemExistence", "Document does not exist!");
@@ -107,7 +165,32 @@ public class ScanCode extends AppCompatActivity implements ZXingScannerView.Resu
                                                     public void onSuccess(Void aVoid) {
                                                         Log.d("Cart Item added", "onSuccess: Cart item added");
                                                         pd.dismiss();
-                                                        onBackPressed();
+                                                        TextView productname=bottomSheetView.findViewById(R.id.productname);
+                                                        productname.setText(cartItem.getProductName());
+                                                        ImageView productimage=bottomSheetView.findViewById(R.id.product_image);
+                                                        Picasso.get()
+                                                                .load(cartItem.getProductImage())
+                                                                .placeholder(R.drawable.ic_baseline_local_grocery_store_24)
+                                                                .into(productimage);
+                                                        TextView price=bottomSheetView.findViewById(R.id.price);
+                                                        price.setText("Rs "+cartItem.getProductPrice()+" /-");
+                                                        bottomSheetView.findViewById(R.id.bottom_add).setOnClickListener(new View.OnClickListener() {
+                                                            @Override
+                                                            public void onClick(View v) {
+                                                                Log.d("TAG","CLICKED");
+                                                                mScannerView.stopCamera();
+                                                                bottomSheetDialog.dismiss();
+                                                                onBackPressed();
+
+                                                            }
+                                                        });
+                                                        //prodcutname.setText(cartItem.getProductName());
+                                                        Log.d("TAG", "mihir");
+                                                        pd.dismiss();
+                                                        bottomSheetDialog.setContentView(bottomSheetView);
+                                                        bottomSheetDialog.show();
+
+
                                                     }
                                                 }).addOnFailureListener(new OnFailureListener() {
                                                     @Override
@@ -115,7 +198,15 @@ public class ScanCode extends AppCompatActivity implements ZXingScannerView.Resu
                                                         Log.d("Cart Item added", "onFailure:Failed to add cart item " + e.toString());
                                                         Toast.makeText(ScanCode.this, "Failed to add cart item", Toast.LENGTH_SHORT).show();
                                                         pd.dismiss();
+                                                        try {
+                                                            Thread.sleep(5000);
+                                                        } catch (InterruptedException ex) {
+                                                            ex.printStackTrace();
+                                                        }
+                                                        mScannerView.stopCamera();
                                                         onBackPressed();
+
+
                                                     }
                                                 });
                                             }
@@ -139,15 +230,14 @@ public class ScanCode extends AppCompatActivity implements ZXingScannerView.Resu
     protected void onPause() {
 
         super.onPause();
-
-        ScannerView.stopCamera();
+       // bottomSheetDialog.dismiss();
+       // ScannerView.stopCamera();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-
-        ScannerView.setResultHandler(this);
-        ScannerView.startCamera();
+        mScannerView.setResultHandler(this);
+        mScannerView.startCamera();
     }
 }

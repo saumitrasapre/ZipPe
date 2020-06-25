@@ -49,6 +49,7 @@ public class barcode extends AppCompatActivity {
         recycler_cart = (RecyclerView) findViewById(R.id.recycler_cart);
         recycler_cart.setLayoutManager(new LinearLayoutManager(this));
         scan_new = (FloatingActionButton) findViewById(R.id.scan_new);
+        scan_new = (FloatingActionButton) findViewById(R.id.scan_new);
         new ItemTouchHelper(itemTouchHelperCallback).attachToRecyclerView(recycler_cart);
 
         loadCartItems();
