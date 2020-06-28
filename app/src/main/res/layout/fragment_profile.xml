@@ -1,13 +1,160 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <TextView
-        android:layout_width="wrap_content"
+    <RelativeLayout
+        android:id="@+id/topBar"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-      android:layout_centerInParent="true"
-        android:text="Profile Page"
-        android:textSize="40sp"/>
+        android:background="@drawable/gradient"
+        android:paddingBottom="20dp">
+
+        <RelativeLayout
+            android:id="@+id/img"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="20dp"
+            android:background="@drawable/avatarview"
+            android:backgroundTint="#06FD92">
+
+            <de.hdodenhof.circleimageview.CircleImageView
+                android:layout_width="120dp"
+                android:layout_height="120dp"
+                android:layout_margin="9dp"
+                android:id="@+id/profilePageImage"
+                android:padding="3dp"
+                app:civ_circle_background_color="@color/whitecolor" />
+
+        </RelativeLayout>
+
+        <TextView
+            android:id="@+id/profileUsername"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/img"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="15dp"
+            android:fontFamily="sans-serif-light"
+            android:text="User Name"
+            android:textColor="@color/whitecolor"
+            android:textSize="32sp" />
+
+        <TextView
+            android:id="@+id/profileLocation"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/profileUsername"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="15dp"
+            android:fontFamily="sans-serif-light"
+            android:text="Location"
+            android:textAllCaps="true"
+            android:textColor="#06FD92"
+            android:textSize="14sp" />
+
+
+    </RelativeLayout>
+
+    <LinearLayout
+        android:id="@+id/linlay1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/topBar"
+        android:orientation="horizontal">
+
+    </LinearLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/topBar">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="30dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginRight="30dp"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Email"
+                    android:textColor="@color/greencolor"
+                    android:textSize="13sp" />
+
+                <TextView
+                    android:id="@+id/profileEmail"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="sans-serif-light"
+                    android:text="Email"
+                    android:textColor="#939292"
+                    android:textSize="18sp"
+                    android:layout_marginBottom="15dp"/>
+
+
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_marginTop="15dp"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_gravity="center"
+                android:gravity="center">
+
+                <Button
+                    android:layout_width="280dp"
+                    android:layout_height="45dp"
+                    android:background="@drawable/btn"
+                    android:elevation="200dp"
+                    android:text=" Change Password"
+                    android:textSize="20dp"
+                    android:layout_marginBottom="15dp"
+                    android:id="@+id/profileresetPassword"
+                    android:textAllCaps="false"
+                    android:textColor="@color/greencolor"/>
+
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:layout_marginTop="15dp">
+
+                <Button
+                    android:layout_width="280dp"
+                    android:layout_height="45dp"
+                    android:background="@drawable/btn"
+                    android:elevation="200dp"
+                    android:text=" Delete Account"
+                    android:textSize="20dp"
+                    android:layout_marginBottom="15dp"
+                    android:id="@+id/profiledeleteAccount"
+                    android:textAllCaps="false"
+                    android:textColor="@android:color/holo_red_dark"/>
+
+
+
+
+            </LinearLayout>
+
+
+
+        </LinearLayout>
+
+
+    </RelativeLayout>
 
 </RelativeLayout>
