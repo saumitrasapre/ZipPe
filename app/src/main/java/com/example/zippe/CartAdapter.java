@@ -72,7 +72,7 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.CartViewHolder
                 CircleImageView dialog_product_image = itemDialog.findViewById(R.id.dialog_product_image);
 
                 dialog_product_name.setText(cartList.get(viewHolder.getAdapterPosition()).getProductName());
-                dialog_product_price.setText("₹ " + cartList.get(viewHolder.getAdapterPosition()).getProductPrice());
+                dialog_product_price.setText("₹ " + String.valueOf(Integer.parseInt(cartList.get(viewHolder.getAdapterPosition()).getProductPrice())*cartList.get(viewHolder.getAdapterPosition()).getProductQuantity()));
                 dialog_product_code.setText(cartList.get(viewHolder.getAdapterPosition()).getProductCode());
                 dialog_product_quantity.setText(String.valueOf(cartList.get(viewHolder.getAdapterPosition()).getProductQuantity()));
                 dialog_product_weight.setText(cartList.get(viewHolder.getAdapterPosition()).getProductWeight());
@@ -97,7 +97,7 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.CartViewHolder
 
         holder.quantity_product.setNumber(String.valueOf(cartList.get(position).getProductQuantity()));
         holder.name_product.setText(cartList.get(position).getProductName());
-        holder.price_product.setText(new StringBuilder("₹").append(cartList.get(position).getProductPrice()));
+        holder.price_product.setText(new StringBuilder("₹").append(String.valueOf(Integer.parseInt(cartList.get(position).getProductPrice())*cartList.get(position).getProductQuantity())));
         holder.weight_product.setText(cartList.get(position).getProductWeight());
 
 
