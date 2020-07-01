@@ -10,6 +10,9 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -47,6 +50,7 @@ public class barcode extends AppCompatActivity {
     private List<ModelCart> mCart = new ArrayList<>();
     private List<ModelCart> mCartlistfull;
     private TextView emptyCart;
+    private boolean cartEmpty=true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -93,17 +97,45 @@ public class barcode extends AppCompatActivity {
 
         MenuInflater menuInflater = getMenuInflater();
         menuInflater.inflate(R.menu.cart_appbar_menu, menu);
+        MenuItem item = menu.findItem(R.id.checkout);
+        if(cartEmpty==false)
+        {
+            item.setEnabled(true);
+            Drawable resIcon = getApplicationContext().getResources().getDrawable(R.drawable.ic_baseline_check_circle_outline_24);
+            item.setIcon(resIcon);
+
+        }
+        else if(cartEmpty==true)
+        {
+            item.setEnabled(false);
+            Drawable resIcon = getApplicationContext().getResources().getDrawable(R.drawable.ic_baseline_check_circle_outline_24);
+            resIcon.mutate().setColorFilter(Color.GRAY, PorterDuff.Mode.SRC_IN);
+            item.setIcon(resIcon);
+            //Toast.makeText(getApplicationContext(),"Cart is empty- Cannot checkout",Toast.LENGTH_SHORT).show();
+        }
         return true;
     }
+
+
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         // Handle item selection
         switch (item.getItemId()) {
             case R.id.checkout:
-                Intent intent = new Intent(getApplicationContext(), Checkout.class);
-                startActivity(intent);
-                return true;
+
+                if(cartEmpty==false)
+                {
+                    Intent intent = new Intent(getApplicationContext(), Checkout.class);
+                    startActivity(intent);
+                    return true;
+                }
+                else if(cartEmpty==true)
+                {
+                    Toast.makeText(getApplicationContext(),"Cart is empty- Cannot checkout",Toast.LENGTH_SHORT).show();
+                    return true;
+                }
+
 
             default:
                 return super.onOptionsItemSelected(item);
@@ -121,16 +153,20 @@ public class barcode extends AppCompatActivity {
                     Log.d("fetchcart", "onSuccess:Cart List Empty ");
                     emptyCart.setVisibility(View.VISIBLE);
                     swipeRefreshCart.setRefreshing(false);
+                    cartEmpty=true;
+                    invalidateOptionsMenu();
                     return;
                 } else {
                     emptyCart.setVisibility(View.GONE);
                     List<ModelCart> temp = queryDocumentSnapshots.toObjects(ModelCart.class);
                     mCart.addAll(temp);
                     mCartlistfull = new ArrayList<>(mCart);
+                    cartEmpty=false;
                     Log.d("fetchcart", "onSuccess: Cart List Fetched ");
                     mCartAdapter = new CartAdapter(getApplicationContext(), mCart, barcode.this);
                     mCartAdapter.notifyDataSetChanged();
                     recycler_cart.setAdapter(mCartAdapter);
+                    invalidateOptionsMenu();
                     swipeRefreshCart.setRefreshing(false);
                 }
             }
@@ -160,6 +196,8 @@ public class barcode extends AppCompatActivity {
                     if (queryDocumentSnapshots.isEmpty()) {
                         Log.d("fetchCart", "onSuccess:Cart List Empty ");
                         emptyCart.setVisibility(View.VISIBLE);
+                        cartEmpty=true;
+                        invalidateOptionsMenu();
                         return;
                     } else {
                         emptyCart.setVisibility(View.GONE);
@@ -170,6 +208,8 @@ public class barcode extends AppCompatActivity {
                         mCartAdapter = new CartAdapter(getApplicationContext(), mCart, barcode.this);
                         mCartAdapter.notifyDataSetChanged();
                         recycler_cart.setAdapter(mCartAdapter);
+                        invalidateOptionsMenu();
+                        cartEmpty=false;
                     }
                 }
 
