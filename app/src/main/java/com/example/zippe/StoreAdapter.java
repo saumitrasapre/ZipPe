@@ -177,6 +177,62 @@ public class StoreAdapter extends RecyclerView.Adapter<StoreAdapter.ViewHolder> 
                                         visit.setBackground(mContext.getResources().getDrawable(R.drawable.button_background_red));
                                         visit.setText("Not Allowed");
                                     }
+                                    else if(!queryDocumentSnapshots.isEmpty())
+                                    {
+                                        visit.setText("Continue");
+                                        visit.setOnClickListener(new View.OnClickListener() {
+
+                                            @Override
+                                            public void onClick(View v) {
+
+                                                if (ActivityCompat.checkSelfPermission((Activity) mContext, ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                                                    FusedLocationProviderClient client = LocationServices.getFusedLocationProviderClient(mContext);
+                                                    client.getLastLocation().addOnSuccessListener(new OnSuccessListener<Location>() {
+                                                        @Override
+                                                        public void onSuccess(Location location) {
+                                                            if (location != null) {
+                                                                Location storeLoc = new Location("");
+                                                                float[] results = new float[1];
+                                                                Location.distanceBetween(storeLoc.getLatitude(), storeLoc.getLongitude(), store.getLocation().getLatitude(), store.getLocation().getLongitude(), results);
+
+                                                                if (results[0] > 11100)//make sign reverse here
+                                                                {
+
+                                                                    pd.show();
+                                                                    db.collection("Stores").whereEqualTo("name", store.getName()).get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                                                                        @Override
+                                                                        public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                                                                            Intent intent = new Intent(bottomSheetView.getContext(), barcode.class);
+                                                                            intentList = queryDocumentSnapshots.getDocuments();
+                                                                            String id = intentList.get(0).getId();
+                                                                            System.out.println("Store id is: " + id);
+                                                                            intent.putExtra("Store_id", id);
+                                                                            bottomSheetView.getContext().startActivity(intent);
+                                                                            pd.dismiss();
+
+                                                                        }
+                                                                    }).addOnFailureListener(new OnFailureListener() {
+                                                                        @Override
+                                                                        public void onFailure(@NonNull Exception e) {
+                                                                            Toast.makeText(bottomSheetView.getContext(), "An error occurred...", Toast.LENGTH_SHORT).show();
+                                                                            pd.dismiss();
+                                                                        }
+                                                                    });
+
+
+                                                                } else {
+                                                                    Toast.makeText(bottomSheetView.getContext(), "Away from store... Please get in the vicinity of the store", Toast.LENGTH_SHORT).show();
+                                                                }
+
+                                                            }
+                                                        }
+                                                    });
+                                                }
+
+
+                                            }
+                                        });
+                                    }
 
                                     //Log.d("Stores", "onSuccess: "+queryDocumentSnapshots.size());
                                 }
@@ -187,63 +243,67 @@ public class StoreAdapter extends RecyclerView.Adapter<StoreAdapter.ViewHolder> 
                                 }
                             });
                         }
-                    }
-                });
+                        else if(queryDocumentSnapshots.isEmpty())
+                        {
+                            visit.setOnClickListener(new View.OnClickListener() {
 
-
-
-                visit.setOnClickListener(new View.OnClickListener() {
-
-                    @Override
-                    public void onClick(View v) {
-
-                        if (ActivityCompat.checkSelfPermission((Activity) mContext, ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-                            FusedLocationProviderClient client = LocationServices.getFusedLocationProviderClient(mContext);
-                            client.getLastLocation().addOnSuccessListener(new OnSuccessListener<Location>() {
                                 @Override
-                                public void onSuccess(Location location) {
-                                    if (location != null) {
-                                        Location storeLoc = new Location("");
-                                        float[] results = new float[1];
-                                        Location.distanceBetween(storeLoc.getLatitude(), storeLoc.getLongitude(), store.getLocation().getLatitude(), store.getLocation().getLongitude(), results);
+                                public void onClick(View v) {
 
-                                        if (results[0] > 11100)//make sign reverse here
-                                        {
+                                    if (ActivityCompat.checkSelfPermission((Activity) mContext, ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                                        FusedLocationProviderClient client = LocationServices.getFusedLocationProviderClient(mContext);
+                                        client.getLastLocation().addOnSuccessListener(new OnSuccessListener<Location>() {
+                                            @Override
+                                            public void onSuccess(Location location) {
+                                                if (location != null) {
+                                                    Location storeLoc = new Location("");
+                                                    float[] results = new float[1];
+                                                    Location.distanceBetween(storeLoc.getLatitude(), storeLoc.getLongitude(), store.getLocation().getLatitude(), store.getLocation().getLongitude(), results);
 
-                                            pd.show();
-                                            db.collection("Stores").whereEqualTo("name", store.getName()).get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
-                                                @Override
-                                                public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-                                                    Intent intent = new Intent(bottomSheetView.getContext(), barcode.class);
-                                                    intentList = queryDocumentSnapshots.getDocuments();
-                                                    String id = intentList.get(0).getId();
-                                                    System.out.println("Store id is: " + id);
-                                                    intent.putExtra("Store_id", id);
-                                                    bottomSheetView.getContext().startActivity(intent);
-                                                    pd.dismiss();
+                                                    if (results[0] > 11100)//make sign reverse here
+                                                    {
+
+                                                        pd.show();
+                                                        db.collection("Stores").whereEqualTo("name", store.getName()).get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                                                            @Override
+                                                            public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                                                                Intent intent = new Intent(bottomSheetView.getContext(), barcode.class);
+                                                                intentList = queryDocumentSnapshots.getDocuments();
+                                                                String id = intentList.get(0).getId();
+                                                                System.out.println("Store id is: " + id);
+                                                                intent.putExtra("Store_id", id);
+                                                                bottomSheetView.getContext().startActivity(intent);
+                                                                pd.dismiss();
+
+                                                            }
+                                                        }).addOnFailureListener(new OnFailureListener() {
+                                                            @Override
+                                                            public void onFailure(@NonNull Exception e) {
+                                                                Toast.makeText(bottomSheetView.getContext(), "An error occurred...", Toast.LENGTH_SHORT).show();
+                                                                pd.dismiss();
+                                                            }
+                                                        });
+
+
+                                                    } else {
+                                                        Toast.makeText(bottomSheetView.getContext(), "Away from store... Please get in the vicinity of the store", Toast.LENGTH_SHORT).show();
+                                                    }
 
                                                 }
-                                            }).addOnFailureListener(new OnFailureListener() {
-                                                @Override
-                                                public void onFailure(@NonNull Exception e) {
-                                                    Toast.makeText(bottomSheetView.getContext(), "An error occurred...", Toast.LENGTH_SHORT).show();
-                                                    pd.dismiss();
-                                                }
-                                            });
-
-
-                                        } else {
-                                            Toast.makeText(bottomSheetView.getContext(), "Away from store... Please get in the vicinity of the store", Toast.LENGTH_SHORT).show();
-                                        }
-
+                                            }
+                                        });
                                     }
+
+
                                 }
                             });
                         }
-
-
                     }
                 });
+
+
+
+
 
 
             }
