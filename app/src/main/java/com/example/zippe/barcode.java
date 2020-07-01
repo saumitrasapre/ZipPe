@@ -16,6 +16,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnFailureListener;
@@ -43,18 +44,20 @@ public class barcode extends AppCompatActivity {
     private SwipeRefreshLayout swipeRefreshCart;
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
     private CollectionReference cart = db.collection("Users").document(FirebaseAuth.getInstance().getCurrentUser().getUid()).collection("Cart");
-    private List<ModelCart> mCart=new ArrayList<>();
+    private List<ModelCart> mCart = new ArrayList<>();
     private List<ModelCart> mCartlistfull;
+    private TextView emptyCart;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_barcode);
+        emptyCart = findViewById(R.id.emptyCart);
         Intent intent = getIntent();
         String store_id = intent.getStringExtra("Store_id");
-        System.out.println("Barcode result is "+store_id);
-        swipeRefreshCart=findViewById(R.id.swipeRefreshCart);
-        toolbar=findViewById(R.id.appBar);
+        System.out.println("Barcode result is " + store_id);
+        swipeRefreshCart = findViewById(R.id.swipeRefreshCart);
+        toolbar = findViewById(R.id.appBar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setTitle("Cart");
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -70,7 +73,7 @@ public class barcode extends AppCompatActivity {
         scan_new.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent id = new Intent(getApplicationContext(),ScanCode.class);
+                Intent id = new Intent(getApplicationContext(), ScanCode.class);
                 id.putExtra("Store_id", store_id);
                 startActivity(id);
             }
@@ -88,8 +91,8 @@ public class barcode extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
 
-        MenuInflater menuInflater=getMenuInflater();
-        menuInflater.inflate(R.menu.cart_appbar_menu,menu);
+        MenuInflater menuInflater = getMenuInflater();
+        menuInflater.inflate(R.menu.cart_appbar_menu, menu);
         return true;
     }
 
@@ -98,7 +101,7 @@ public class barcode extends AppCompatActivity {
         // Handle item selection
         switch (item.getItemId()) {
             case R.id.checkout:
-                Intent intent=new Intent(getApplicationContext(),Checkout.class);
+                Intent intent = new Intent(getApplicationContext(), Checkout.class);
                 startActivity(intent);
                 return true;
 
@@ -115,15 +118,17 @@ public class barcode extends AppCompatActivity {
                 mCart.clear();
 
                 if (queryDocumentSnapshots.isEmpty()) {
-                    Log.d("fetchstores", "onSuccess:Store List Empty ");
+                    Log.d("fetchcart", "onSuccess:Cart List Empty ");
+                    emptyCart.setVisibility(View.VISIBLE);
                     swipeRefreshCart.setRefreshing(false);
                     return;
                 } else {
+                    emptyCart.setVisibility(View.GONE);
                     List<ModelCart> temp = queryDocumentSnapshots.toObjects(ModelCart.class);
                     mCart.addAll(temp);
                     mCartlistfull = new ArrayList<>(mCart);
                     Log.d("fetchcart", "onSuccess: Cart List Fetched ");
-                    mCartAdapter = new CartAdapter(getApplicationContext(), mCart,barcode.this);
+                    mCartAdapter = new CartAdapter(getApplicationContext(), mCart, barcode.this);
                     mCartAdapter.notifyDataSetChanged();
                     recycler_cart.setAdapter(mCartAdapter);
                     swipeRefreshCart.setRefreshing(false);
@@ -143,7 +148,6 @@ public class barcode extends AppCompatActivity {
 
     private void loadCartItems() {
 
-
         cart.addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
             public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
@@ -154,14 +158,16 @@ public class barcode extends AppCompatActivity {
                 } else {
 
                     if (queryDocumentSnapshots.isEmpty()) {
-                        Log.d("fetchstores", "onSuccess:Store List Empty ");
+                        Log.d("fetchCart", "onSuccess:Cart List Empty ");
+                        emptyCart.setVisibility(View.VISIBLE);
                         return;
                     } else {
+                        emptyCart.setVisibility(View.GONE);
                         List<ModelCart> temp = queryDocumentSnapshots.toObjects(ModelCart.class);
                         mCart.addAll(temp);
                         mCartlistfull = new ArrayList<>(mCart);
                         Log.d("fetchcart", "onSuccess: Cart List Fetched ");
-                        mCartAdapter = new CartAdapter(getApplicationContext(), mCart,barcode.this);
+                        mCartAdapter = new CartAdapter(getApplicationContext(), mCart, barcode.this);
                         mCartAdapter.notifyDataSetChanged();
                         recycler_cart.setAdapter(mCartAdapter);
                     }
@@ -174,7 +180,7 @@ public class barcode extends AppCompatActivity {
     }
 
 
-    ItemTouchHelper.SimpleCallback itemTouchHelperCallback=new ItemTouchHelper.SimpleCallback(0,ItemTouchHelper.RIGHT|ItemTouchHelper.LEFT) {
+    ItemTouchHelper.SimpleCallback itemTouchHelperCallback = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.RIGHT | ItemTouchHelper.LEFT) {
         @Override
         public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
             return false;
