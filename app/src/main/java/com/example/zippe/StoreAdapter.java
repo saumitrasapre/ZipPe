@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.net.Uri;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -32,6 +33,7 @@ import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.GeoPoint;
@@ -160,6 +162,35 @@ public class StoreAdapter extends RecyclerView.Adapter<StoreAdapter.ViewHolder> 
                 bottomSheetDialog.show();
 
                 visit = bottomSheetView.findViewById(R.id.visit);
+
+                db.collection("Users").document(FirebaseAuth.getInstance().getCurrentUser().getUid()).collection("Cart").limit(1).get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                    @Override
+                    public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                        if(!queryDocumentSnapshots.isEmpty())
+                        {
+                            db.collection("Users").document(FirebaseAuth.getInstance().getCurrentUser().getUid()).collection("Cart").whereEqualTo("storeId",store.getStoreId()).limit(1).get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                                @Override
+                                public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                                    if(queryDocumentSnapshots.isEmpty())
+                                    {
+                                        visit.setEnabled(false);
+                                        visit.setBackground(mContext.getResources().getDrawable(R.drawable.button_background_red));
+                                        visit.setText("Not Allowed");
+                                    }
+
+                                    //Log.d("Stores", "onSuccess: "+queryDocumentSnapshots.size());
+                                }
+                            }).addOnFailureListener(new OnFailureListener() {
+                                @Override
+                                public void onFailure(@NonNull Exception e) {
+
+                                }
+                            });
+                        }
+                    }
+                });
+
+
 
                 visit.setOnClickListener(new View.OnClickListener() {
 

@@ -13,11 +13,12 @@ public class ModelStore {
     private String address;
     private GeoPoint location;
     private String postalCode;
+    private String storeId;
 
     public ModelStore() {
     }
 
-    public ModelStore(String mainImageUrl, String name, String rating, String category, List<String> otherImages, String address, GeoPoint location, String postalCode) {
+    public ModelStore(String mainImageUrl, String name, String rating, String category, List<String> otherImages, String address, GeoPoint location, String postalCode, String storeId) {
         this.mainImageUrl = mainImageUrl;
         this.name = name;
         this.rating = rating;
@@ -26,9 +27,10 @@ public class ModelStore {
         this.address = address;
         this.location = location;
         this.postalCode = postalCode;
+        this.storeId = storeId;
     }
 
-    public ModelStore(String mainImageUrl, String name, String rating, String category, String address, GeoPoint location, String postalCode) {
+    public ModelStore(String mainImageUrl, String name, String rating, String category, String address, GeoPoint location, String postalCode, String storeId) {
         this.mainImageUrl = mainImageUrl;
         this.name = name;
         this.rating = rating;
@@ -36,6 +38,7 @@ public class ModelStore {
         this.address = address;
         this.location = location;
         this.postalCode = postalCode;
+        this.storeId = storeId;
     }
 
     public String getPostalCode() {
@@ -44,6 +47,14 @@ public class ModelStore {
 
     public void setPostalCode(String postalCode) {
         this.postalCode = postalCode;
+    }
+
+    public String getStoreId() {
+        return storeId;
+    }
+
+    public void setStoreId(String storeId) {
+        this.storeId = storeId;
     }
 
     public String getAddress() {
