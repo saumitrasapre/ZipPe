@@ -9,8 +9,9 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
+import androidx.appcompat.widget.Toolbar;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -18,7 +19,6 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -28,7 +28,6 @@ import com.google.firebase.firestore.QuerySnapshot;
 import java.util.ArrayList;
 import java.util.List;
 
-import Models.ModelCart;
 import Models.ModelCheckout;
 
 public class Checkout extends AppCompatActivity {
@@ -40,8 +39,11 @@ public class Checkout extends AppCompatActivity {
     private List<ModelCheckout> mCheckoutlistfull;
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
     private CollectionReference cart = db.collection("Users").document(FirebaseAuth.getInstance().getCurrentUser().getUid()).collection("Cart");
-    Button send;
-    FirebaseUser auth;
+    private Toolbar checkoutToolbar;
+    private TextView checkoutTotal;
+    private Double total=0.0;
+    private Button payWithUpi;
+    private CollectionReference pastOrders=db.collection("Users").document(FirebaseAuth.getInstance().getCurrentUser().getUid()).collection("Past Orders");
 
     final int UPI_PAYMENT = 0;
 
@@ -53,19 +55,21 @@ public class Checkout extends AppCompatActivity {
         recyclerView = findViewById(R.id.checkoutitemRecycler);
         layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
+        checkoutToolbar=findViewById(R.id.checkouttoolbar);
+        checkoutTotal=findViewById(R.id.checkoutTotal);
+        payWithUpi=findViewById(R.id.payWithUpi);
+        setSupportActionBar(checkoutToolbar);
+        getSupportActionBar().setTitle("Checkout");
         initializeViews();
         loadCheckoutData();
 
-        auth = FirebaseAuth.getInstance().getCurrentUser();
 
-
-
-        send.setOnClickListener(new View.OnClickListener() {
+        payWithUpi.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 //Getting the values from the EditTexts
 
-                String amount = "1";
+                String amount = String.valueOf(total);
                 String note = "Zippe Order";
                 String name = "ZipPe";
                 String upiId = "saumitra.sapre69@oksbi";
@@ -91,6 +95,12 @@ public class Checkout extends AppCompatActivity {
                         List<ModelCheckout> temp = queryDocumentSnapshots.toObjects(ModelCheckout.class);
                         mList.addAll(temp);
                         mCheckoutlistfull=new ArrayList<>(mList);
+
+                        for( ModelCheckout ele :mList)
+                        {
+                            total+=Double.parseDouble(ele.getResultPrice());
+                        }
+                        checkoutTotal.setText("₹ "+String.valueOf(total)+" /-");
                         Log.d("fetchcheckout", "onSuccess: Checkout List Fetched ");
                         adapter=new CheckoutAdapter(mList,getApplicationContext());
                         adapter.notifyDataSetChanged();
@@ -102,7 +112,6 @@ public class Checkout extends AppCompatActivity {
     }
 
     void initializeViews() {
-        send = findViewById(R.id.send);
     }
 
     void payUsingUpi(String amount, String upiId, String name, String note) {

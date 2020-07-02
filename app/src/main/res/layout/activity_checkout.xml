@@ -1,28 +1,70 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".Checkout">
 
-   <androidx.recyclerview.widget.RecyclerView
-       android:layout_width="match_parent"
-       android:layout_height="350dp"
-       android:padding="4dp"
-       android:scrollbars="vertical"
-       android:id="@+id/checkoutitemRecycler"/>
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/checkouttoolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="@color/whitecolor"
+        android:elevation="4dp"
+        android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
+        app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
+        app:titleTextColor="@color/greencolor" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/checkoutitemRecycler"
+        android:layout_width="match_parent"
+        android:layout_height="350dp"
+        android:layout_below="@+id/checkouttoolbar"
+        android:padding="4dp"
+        android:scrollbars="vertical" />
+
+    <RelativeLayout
+        android:id="@+id/totalLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/checkoutitemRecycler"
+        android:layout_margin="8dp"
+        android:orientation="horizontal"
+        android:padding="5dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:text="Total"
+            android:textSize="30sp" />
+
+        <TextView
+            android:id="@+id/checkoutTotal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:text="Amount"
+            android:textColor="@color/greencolor"
+            android:textSize="30sp"
+            android:textStyle="bold" />
+
+    </RelativeLayout>
 
     <Button
-        android:layout_width="100dp"
-        android:layout_height="wrap_content"
-        android:background="@color/colorPrimary"
-        android:textColor="#fff"
-        android:id="@+id/send"
-        android:layout_below="@+id/checkoutitemRecycler"
-        android:layout_marginTop="20dp"
+        android:id="@+id/payWithUpi"
+        android:layout_below="@+id/totalLayout"
+        android:layout_width="280dp"
+        android:layout_height="45dp"
         android:layout_centerHorizontal="true"
-        android:text="send by upi"/>
+        android:layout_marginTop="20dp"
+        android:background="@drawable/joinbtn"
+        android:elevation="200dp"
+        android:text="Pay with Upi"
+        android:textSize="20dp"
+        android:textAllCaps="true"
+        android:textColor="@color/whitecolor" />
 
 
 </RelativeLayout>
