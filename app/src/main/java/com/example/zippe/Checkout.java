@@ -1,5 +1,6 @@
 package com.example.zippe;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
@@ -11,6 +12,8 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
 import androidx.appcompat.widget.Toolbar;
 
 import androidx.annotation.Nullable;
@@ -18,15 +21,24 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.firestore.SetOptions;
+import com.google.firebase.firestore.WriteBatch;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import Models.ModelCheckout;
 
@@ -39,9 +51,11 @@ public class Checkout extends AppCompatActivity {
     private List<ModelCheckout> mCheckoutlistfull;
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
     private CollectionReference cart = db.collection("Users").document(FirebaseAuth.getInstance().getCurrentUser().getUid()).collection("Cart");
+    private WriteBatch batch=db.batch();
     private Toolbar checkoutToolbar;
     private TextView checkoutTotal;
     private Double total=0.0;
+    private ProgressDialog pd;
     private Button payWithUpi;
     private CollectionReference pastOrders=db.collection("Users").document(FirebaseAuth.getInstance().getCurrentUser().getUid()).collection("Past Orders");
 
@@ -60,7 +74,12 @@ public class Checkout extends AppCompatActivity {
         payWithUpi=findViewById(R.id.payWithUpi);
         setSupportActionBar(checkoutToolbar);
         getSupportActionBar().setTitle("Checkout");
-        initializeViews();
+
+        pd = new ProgressDialog(this);
+        pd.setMessage("Loading...");
+        pd.setCancelable(true);
+        pd.setCanceledOnTouchOutside(false);
+
         loadCheckoutData();
 
 
@@ -69,10 +88,11 @@ public class Checkout extends AppCompatActivity {
             public void onClick(View view) {
                 //Getting the values from the EditTexts
 
-                String amount = String.valueOf(total);
+                //String amount = String.valueOf(total);
+                String amount = "1";
                 String note = "Zippe Order";
                 String name = "ZipPe";
-                String upiId = "saumitra.sapre69@oksbi";
+                String upiId = "saprepradeep@okhdfcbank"; //replace with  different UPI id
                 payUsingUpi(amount, upiId, name, note);
             }
         });
@@ -101,6 +121,7 @@ public class Checkout extends AppCompatActivity {
                             total+=Double.parseDouble(ele.getResultPrice());
                         }
                         checkoutTotal.setText("₹ "+String.valueOf(total)+" /-");
+
                         Log.d("fetchcheckout", "onSuccess: Checkout List Fetched ");
                         adapter=new CheckoutAdapter(mList,getApplicationContext());
                         adapter.notifyDataSetChanged();
@@ -111,8 +132,6 @@ public class Checkout extends AppCompatActivity {
         });
     }
 
-    void initializeViews() {
-    }
 
     void payUsingUpi(String amount, String upiId, String name, String note) {
 
@@ -195,6 +214,38 @@ public class Checkout extends AppCompatActivity {
                 //Code to handle successful transaction here.
                 Toast.makeText(Checkout.this, "Transaction successful.", Toast.LENGTH_SHORT).show();
                 Log.d("UPI", "responseStr: " + approvalRefNo);
+                pd.show();
+                SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd-MM-yyyy-hh-mm-ss");
+                String format = simpleDateFormat.format(new Date());
+
+                DocumentReference docref=pastOrders.document(mList.get(0).getStoreId()+"_"+format);
+                Map<Object, Object> map = new HashMap<>();
+                map.put("Total",total);
+                map.put("approvalRefNo",approvalRefNo);
+                docref.set(map, SetOptions.merge());
+                CollectionReference ref=docref.collection("Items");
+                for(ModelCheckout ele:mList)
+                {
+                    ref.add(ele).addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                        @Override
+                        public void onSuccess(DocumentReference documentReference) {
+
+                            Log.d("PastOrders", "onSuccess: Item added ");
+                        }
+                    }).addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            Log.d("Past Orders","onFailure:Failed to add item");
+                        }
+                    });
+                    cart.document(ele.getProductCode()).delete();
+                }
+                Intent intent=new Intent(getApplicationContext(),LandingScreen.class);
+                startActivity(intent);
+                pd.dismiss();
+                finish();
+
+
             } else if ("Payment cancelled by user.".equals(paymentCancel)) {
                 Toast.makeText(Checkout.this, "Payment cancelled by user.", Toast.LENGTH_SHORT).show();
             } else {
