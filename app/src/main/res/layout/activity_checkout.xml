@@ -30,10 +30,39 @@
         android:layout_height="wrap_content"
         android:layout_below="@+id/checkoutitemRecycler"
         android:layout_margin="8dp"
-        android:orientation="horizontal"
         android:padding="5dp">
 
         <TextView
+            android:layout_margin="5dp"
+            android:id="@+id/serviceChargeText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:text="Service Charge"
+            android:textSize="20sp" />
+        <View
+            android:background="@color/lightgrey"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_centerVertical="true"
+            android:layout_toStartOf="@+id/checkout_product_price"
+            android:padding="5dp" />
+
+        <TextView
+            android:layout_margin="5dp"
+            android:id="@+id/serviceChargeAmount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:text="2%"
+            android:textColor="@color/greencolor"
+            android:textSize="20sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:layout_margin="5dp"
+            android:layout_below="@id/serviceChargeText"
+            android:id="@+id/totalText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentStart="true"
@@ -41,6 +70,8 @@
             android:textSize="30sp" />
 
         <TextView
+            android:layout_margin="5dp"
+            android:layout_below="@id/serviceChargeAmount"
             android:id="@+id/checkoutTotal"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

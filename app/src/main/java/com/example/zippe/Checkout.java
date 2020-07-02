@@ -120,6 +120,7 @@ public class Checkout extends AppCompatActivity {
                         {
                             total+=Double.parseDouble(ele.getResultPrice());
                         }
+                        total+=(total*0.02);
                         checkoutTotal.setText("₹ "+String.valueOf(total)+" /-");
 
                         Log.d("fetchcheckout", "onSuccess: Checkout List Fetched ");
