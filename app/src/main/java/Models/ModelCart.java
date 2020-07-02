@@ -9,11 +9,12 @@ public class ModelCart {
     String productImage;
     String productWeight;
     String storeId;
+    String resultPrice;
 
     public ModelCart() {
     }
 
-    public ModelCart(String productName, String productPrice, int productQuantity, String productCode, String productImage, String productWeight, String storeId) {
+    public ModelCart(String productName, String productPrice, int productQuantity, String productCode, String productImage, String productWeight, String storeId, String resultPrice) {
         this.productName = productName;
         this.productPrice = productPrice;
         this.productQuantity = productQuantity;
@@ -21,6 +22,15 @@ public class ModelCart {
         this.productImage = productImage;
         this.productWeight = productWeight;
         this.storeId = storeId;
+        this.resultPrice = resultPrice;
+    }
+
+    public String getResultPrice() {
+        return resultPrice;
+    }
+
+    public void setResultPrice(String resultPrice) {
+        this.resultPrice = resultPrice;
     }
 
     public String getProductWeight() {

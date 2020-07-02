@@ -27,6 +27,7 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
@@ -50,7 +51,8 @@ public class barcode extends AppCompatActivity {
     private List<ModelCart> mCart = new ArrayList<>();
     private List<ModelCart> mCartlistfull;
     private TextView emptyCart;
-    private boolean cartEmpty=true;
+    private boolean cartEmpty = true;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,11 +61,17 @@ public class barcode extends AppCompatActivity {
         emptyCart = findViewById(R.id.emptyCart);
         Intent intent = getIntent();
         String store_id = intent.getStringExtra("Store_id");
-        System.out.println("Barcode result is " + store_id);
         swipeRefreshCart = findViewById(R.id.swipeRefreshCart);
         toolbar = findViewById(R.id.appBar);
         setSupportActionBar(toolbar);
-        getSupportActionBar().setTitle("Cart");
+        db.collection("Stores").document(store_id).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+            @Override
+            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                String storeName = documentSnapshot.get("name").toString();
+                getSupportActionBar().setTitle("Cart- " + storeName);
+            }
+        });
+
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         recycler_cart = (RecyclerView) findViewById(R.id.recycler_cart);
@@ -98,15 +106,12 @@ public class barcode extends AppCompatActivity {
         MenuInflater menuInflater = getMenuInflater();
         menuInflater.inflate(R.menu.cart_appbar_menu, menu);
         MenuItem item = menu.findItem(R.id.checkout);
-        if(cartEmpty==false)
-        {
+        if (cartEmpty == false) {
             item.setEnabled(true);
             Drawable resIcon = getApplicationContext().getResources().getDrawable(R.drawable.ic_baseline_check_circle_outline_24);
             item.setIcon(resIcon);
 
-        }
-        else if(cartEmpty==true)
-        {
+        } else if (cartEmpty == true) {
             item.setEnabled(false);
             Drawable resIcon = getApplicationContext().getResources().getDrawable(R.drawable.ic_baseline_check_circle_outline_24);
             resIcon.mutate().setColorFilter(Color.GRAY, PorterDuff.Mode.SRC_IN);
@@ -117,22 +122,18 @@ public class barcode extends AppCompatActivity {
     }
 
 
-
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         // Handle item selection
         switch (item.getItemId()) {
             case R.id.checkout:
 
-                if(cartEmpty==false)
-                {
+                if (cartEmpty == false) {
                     Intent intent = new Intent(getApplicationContext(), Checkout.class);
                     startActivity(intent);
                     return true;
-                }
-                else if(cartEmpty==true)
-                {
-                    Toast.makeText(getApplicationContext(),"Cart is empty- Cannot checkout",Toast.LENGTH_SHORT).show();
+                } else if (cartEmpty == true) {
+                    Toast.makeText(getApplicationContext(), "Cart is empty- Cannot checkout", Toast.LENGTH_SHORT).show();
                     return true;
                 }
 
@@ -153,7 +154,7 @@ public class barcode extends AppCompatActivity {
                     Log.d("fetchcart", "onSuccess:Cart List Empty ");
                     emptyCart.setVisibility(View.VISIBLE);
                     swipeRefreshCart.setRefreshing(false);
-                    cartEmpty=true;
+                    cartEmpty = true;
                     invalidateOptionsMenu();
                     return;
                 } else {
@@ -161,7 +162,7 @@ public class barcode extends AppCompatActivity {
                     List<ModelCart> temp = queryDocumentSnapshots.toObjects(ModelCart.class);
                     mCart.addAll(temp);
                     mCartlistfull = new ArrayList<>(mCart);
-                    cartEmpty=false;
+                    cartEmpty = false;
                     Log.d("fetchcart", "onSuccess: Cart List Fetched ");
                     mCartAdapter = new CartAdapter(getApplicationContext(), mCart, barcode.this);
                     mCartAdapter.notifyDataSetChanged();
@@ -196,7 +197,7 @@ public class barcode extends AppCompatActivity {
                     if (queryDocumentSnapshots.isEmpty()) {
                         Log.d("fetchCart", "onSuccess:Cart List Empty ");
                         emptyCart.setVisibility(View.VISIBLE);
-                        cartEmpty=true;
+                        cartEmpty = true;
                         invalidateOptionsMenu();
                         return;
                     } else {
@@ -209,7 +210,7 @@ public class barcode extends AppCompatActivity {
                         mCartAdapter.notifyDataSetChanged();
                         recycler_cart.setAdapter(mCartAdapter);
                         invalidateOptionsMenu();
-                        cartEmpty=false;
+                        cartEmpty = false;
                     }
                 }
 

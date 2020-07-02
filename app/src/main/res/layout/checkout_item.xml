@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    app:cardCornerRadius="4dp">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_margin="4dp">
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/checkout_product_image"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:padding="2dp" />
+
+        <TextView
+            android:id="@+id/checkout_product_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_toEndOf="@+id/checkout_product_image"
+            android:text="Product Name"
+            android:textColor="@color/greencolor"
+            android:textSize="20sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/checkout_product_weight"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/checkout_product_name"
+            android:layout_marginStart="8dp"
+            android:layout_toEndOf="@id/checkout_product_image"
+            android:text="Product Weight"
+            android:textSize="15sp" />
+
+        <TextView
+            android:padding="5dp"
+            android:id="@+id/checkout_product_price"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:text="Price"
+            android:textSize="20sp" />
+
+        <TextView
+            android:padding="5dp"
+            android:id="@+id/checkout_product_quantity"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_toStartOf="@id/checkout_product_price"
+            android:text="Quantity"
+            android:textSize="20sp" />
+
+        <View
+            android:background="@color/lightgrey"
+            android:layout_width="0.7dp"
+            android:layout_height="40dp"
+            android:layout_centerVertical="true"
+            android:layout_toStartOf="@+id/checkout_product_price"
+            android:padding="5dp" />
+
+
+    </RelativeLayout>
+
+</androidx.cardview.widget.CardView>

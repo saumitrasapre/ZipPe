@@ -100,6 +100,7 @@ public class ScanCode extends AppCompatActivity implements ZXingScannerView.Resu
                                 itemList = queryDocumentSnapshots.getDocuments();
                                 ModelCart cartItem = itemList.get(0).toObject(ModelCart.class);
                                 cartItem.setProductQuantity(1);
+                                cartItem.setResultPrice(cartItem.getProductPrice());
                                 cartItem.setStoreId(store_id);
                                 cart.document(result.getText()).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                                     @Override
@@ -108,8 +109,9 @@ public class ScanCode extends AppCompatActivity implements ZXingScannerView.Resu
                                             DocumentSnapshot document = task.getResult();
                                             if (document.exists()) {
                                                 Log.d("ItemExistence", "Document exists!");
-                                                Map<Object, Long> map = new HashMap<>();
+                                                Map<Object, Object> map = new HashMap<>();
                                                 map.put("productQuantity", (Long) document.get("productQuantity")+1);
+                                                map.put("resultPrice",String.valueOf(Long.parseLong(String.valueOf(map.get("productQuantity")))*(Long.parseLong((String)document.get("productPrice")))));
 
                                                 TextView productname=bottomSheetView.findViewById(R.id.productname);
                                                 productname.setText(cartItem.getProductName());

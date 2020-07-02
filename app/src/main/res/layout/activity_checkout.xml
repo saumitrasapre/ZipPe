@@ -4,44 +4,14 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:gravity="center"
-    tools:context=".MainActivity">
+    tools:context=".Checkout">
 
-    <EditText
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="Amount"
-        android:layout_marginLeft="20dp"
-        android:layout_marginRight="20dp"
-        android:layout_marginTop="20dp"
-        android:id="@+id/amount_et"
-        android:inputType="number"/>
-
-
-
-    <!--Remove above editText-->
-
-    <EditText
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="Name"
-        android:layout_marginLeft="20dp"
-        android:layout_marginRight="20dp"
-        android:layout_marginTop="20dp"
-        android:id="@+id/name"
-        android:layout_below="@+id/amount_et"
-        />
-
-    <EditText
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="Note"
-        android:layout_marginLeft="20dp"
-        android:layout_marginRight="20dp"
-        android:layout_marginTop="20dp"
-        android:id="@+id/note"
-        android:layout_below="@+id/name"
-        android:text="Maintenance Fees"/>
+   <androidx.recyclerview.widget.RecyclerView
+       android:layout_width="match_parent"
+       android:layout_height="350dp"
+       android:padding="4dp"
+       android:scrollbars="vertical"
+       android:id="@+id/checkoutitemRecycler"/>
 
     <Button
         android:layout_width="100dp"
@@ -49,7 +19,7 @@
         android:background="@color/colorPrimary"
         android:textColor="#fff"
         android:id="@+id/send"
-        android:layout_below="@+id/note"
+        android:layout_below="@+id/checkoutitemRecycler"
         android:layout_marginTop="20dp"
         android:layout_centerHorizontal="true"
         android:text="send by upi"/>

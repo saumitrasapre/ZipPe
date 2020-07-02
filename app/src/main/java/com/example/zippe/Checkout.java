@@ -12,24 +12,35 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-//import com.google.firebase.database.DataSnapshot;
-//import com.google.firebase.database.DatabaseError;
-//import com.google.firebase.database.DatabaseReference;
-//import com.google.firebase.database.FirebaseDatabase;
-//import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.EventListener;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
+import java.util.List;
+
+import Models.ModelCart;
+import Models.ModelCheckout;
 
 public class Checkout extends AppCompatActivity {
 
-    EditText amountEt, noteEt, nameEt;
+    private RecyclerView recyclerView;
+    private RecyclerView.Adapter adapter;
+    private RecyclerView.LayoutManager layoutManager;
+    private List<ModelCheckout> mList = new ArrayList();
+    private List<ModelCheckout> mCheckoutlistfull;
+    private FirebaseFirestore db = FirebaseFirestore.getInstance();
+    private CollectionReference cart = db.collection("Users").document(FirebaseAuth.getInstance().getCurrentUser().getUid()).collection("Cart");
     Button send;
-//    DatabaseReference reference;
     FirebaseUser auth;
 
     final int UPI_PAYMENT = 0;
@@ -39,44 +50,59 @@ public class Checkout extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_checkout);
 
-        auth=FirebaseAuth.getInstance().getCurrentUser();
-//        reference= FirebaseDatabase.getInstance().getReference().child("member").child(auth.getUid());
-
-
+        recyclerView = findViewById(R.id.checkoutitemRecycler);
+        layoutManager = new LinearLayoutManager(this);
+        recyclerView.setLayoutManager(layoutManager);
         initializeViews();
+        loadCheckoutData();
+
+        auth = FirebaseAuth.getInstance().getCurrentUser();
+
+
 
         send.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 //Getting the values from the EditTexts
 
-                String amount = amountEt.getText().toString();
-                String note = noteEt.getText().toString();
-                String name = nameEt.getText().toString();
+                String amount = "1";
+                String note = "Zippe Order";
+                String name = "ZipPe";
                 String upiId = "saumitra.sapre69@oksbi";
                 payUsingUpi(amount, upiId, name, note);
             }
         });
     }
 
+    private void loadCheckoutData() {
+        cart.addSnapshotListener(new EventListener<QuerySnapshot>() {
+            @Override
+            public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
+                mList.clear();
+                if (e != null) {
+                    Toast.makeText(getApplicationContext(), "Error fetching checkout data", Toast.LENGTH_SHORT).show();
+                    Log.d("checkoutfetch", "onEvent: Error fetching checkout data " + e.toString());
+                } else {
+                    if (queryDocumentSnapshots.isEmpty()) {
+                        Log.d("fetchCheckout", "onSuccess:Checkout List Empty ");
+                    }
+                    else
+                    {
+                        List<ModelCheckout> temp = queryDocumentSnapshots.toObjects(ModelCheckout.class);
+                        mList.addAll(temp);
+                        mCheckoutlistfull=new ArrayList<>(mList);
+                        Log.d("fetchcheckout", "onSuccess: Checkout List Fetched ");
+                        adapter=new CheckoutAdapter(mList,getApplicationContext());
+                        adapter.notifyDataSetChanged();
+                        recyclerView.setAdapter(adapter);
+                    }
+                }
+            }
+        });
+    }
+
     void initializeViews() {
         send = findViewById(R.id.send);
-        amountEt = findViewById(R.id.amount_et);
-        noteEt = findViewById(R.id.note);
-        nameEt = findViewById(R.id.name);
-
-//        reference.addListenerForSingleValueEvent(new ValueEventListener() {
-//            @Override
-//            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-//                Member member=dataSnapshot.getValue(Member.class);
-//                nameEt.setText(member.getName());
-//            }
-//
-//            @Override
-//            public void onCancelled(@NonNull DatabaseError databaseError) {
-//
-//            }
-//        });
     }
 
     void payUsingUpi(String amount, String upiId, String name, String note) {
@@ -97,10 +123,10 @@ public class Checkout extends AppCompatActivity {
         Intent chooser = Intent.createChooser(upiPayIntent, "Pay with");
 
         // check if intent resolves
-        if(null != chooser.resolveActivity(getPackageManager())) {
+        if (null != chooser.resolveActivity(getPackageManager())) {
             startActivityForResult(chooser, UPI_PAYMENT);
         } else {
-            Toast.makeText(Checkout.this,"No UPI app found, please install one to continue",Toast.LENGTH_SHORT).show();
+            Toast.makeText(Checkout.this, "No UPI app found, please install one to continue", Toast.LENGTH_SHORT).show();
         }
 
     }
@@ -137,23 +163,21 @@ public class Checkout extends AppCompatActivity {
     private void upiPaymentDataOperation(ArrayList<String> data) {
         if (isConnectionAvailable(Checkout.this)) {
             String str = data.get(0);
-            Log.d("UPIPAY", "upiPaymentDataOperation: "+str);
+            Log.d("UPIPAY", "upiPaymentDataOperation: " + str);
             String paymentCancel = "";
-            if(str == null) str = "discard";
+            if (str == null) str = "discard";
             String status = "";
             String approvalRefNo = "";
             String response[] = str.split("&");
             for (int i = 0; i < response.length; i++) {
                 String equalStr[] = response[i].split("=");
-                if(equalStr.length >= 2) {
+                if (equalStr.length >= 2) {
                     if (equalStr[0].toLowerCase().equals("Status".toLowerCase())) {
                         status = equalStr[1].toLowerCase();
-                    }
-                    else if (equalStr[0].toLowerCase().equals("ApprovalRefNo".toLowerCase()) || equalStr[0].toLowerCase().equals("txnRef".toLowerCase())) {
+                    } else if (equalStr[0].toLowerCase().equals("ApprovalRefNo".toLowerCase()) || equalStr[0].toLowerCase().equals("txnRef".toLowerCase())) {
                         approvalRefNo = equalStr[1];
                     }
-                }
-                else {
+                } else {
                     paymentCancel = "Payment cancelled by user.";
                 }
             }
@@ -161,12 +185,10 @@ public class Checkout extends AppCompatActivity {
             if (status.equals("success")) {
                 //Code to handle successful transaction here.
                 Toast.makeText(Checkout.this, "Transaction successful.", Toast.LENGTH_SHORT).show();
-                Log.d("UPI", "responseStr: "+approvalRefNo);
-            }
-            else if("Payment cancelled by user.".equals(paymentCancel)) {
+                Log.d("UPI", "responseStr: " + approvalRefNo);
+            } else if ("Payment cancelled by user.".equals(paymentCancel)) {
                 Toast.makeText(Checkout.this, "Payment cancelled by user.", Toast.LENGTH_SHORT).show();
-            }
-            else {
+            } else {
                 Toast.makeText(Checkout.this, "Transaction failed.Please try again", Toast.LENGTH_SHORT).show();
             }
         } else {

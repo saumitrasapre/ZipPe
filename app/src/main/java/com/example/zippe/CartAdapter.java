@@ -110,8 +110,9 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.CartViewHolder
                     @Override
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
                         for (QueryDocumentSnapshot document : task.getResult()) {
-                            Map<Object, Integer> map = new HashMap<>();
+                            Map<Object, Object> map = new HashMap<>();
                             map.put("productQuantity", newValue);
+                            map.put("resultPrice", String.valueOf(Long.valueOf(newValue)*Long.parseLong((String)document.get("productPrice"))));
                             cart.document(document.getId()).set(map, SetOptions.merge());
                         }
 
